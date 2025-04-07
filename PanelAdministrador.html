@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('CSS'); ?>
+  <style>
+    :root {
+      --verde-uabc: #1C6B3C;
+      --amarillo-uabc: #FFB800;
+      --verde-claro: #c8e6c9;
+      --blanco: #ffffff;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: var(--verde-uabc);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .contenedor-principal {
+      max-width: 1200px;
+      margin: 20px auto;
+      background: var(--blanco);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      color: var(--amarillo-uabc);
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 16px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    th {
+      background-color: var(--verde-uabc);
+      color: var(--blanco);
+      text-transform: uppercase;
+      font-weight: bold;
+      padding: 14px;
+      border-bottom: 2px solid var(--amarillo-uabc);
+    }
+
+    td {
+      padding: 12px;
+      background-color: var(--blanco);
+      border-bottom: 1px solid #ccc;
+    }
+
+    tbody tr:nth-child(even) td {
+      background-color: #f0f0f0;
+    }
+
+    tbody tr:hover td {
+      background-color: var(--verde-claro);
+    }
+
+    .boton-uabc {
+      background: var(--amarillo-uabc);
+      color: var(--verde-uabc) !important;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 2px;
+    }
+
+    .boton-uabc:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255,184,0,0.3);
+    }
+
+    .input-uabc {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--verde-claro);
+      border-radius: 8px;
+      max-width: 400px;
+    }
+
+    /* MODAL */
+    .modal-uabc {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      padding-top: 80px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6);
+    }
+
+    .modal-contenido {
+      background-color: var(--blanco);
+      margin: auto;
+      padding: 30px;
+      border: 2px solid var(--verde-uabc);
+      width: 80%;
+      max-width: 700px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      animation: entradaSuave 0.4s ease;
+    }
+
+    .cerrar {
+      color: var(--verde-uabc);
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .cerrar:hover {
+      color: red;
+    }
+
+    @keyframes entradaSuave {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="contenedor-principal animar-entrada">
+    <h1>📋 Panel de Administración</h1>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+      <input class="input-uabc" type="text" placeholder="Buscar por título..." onkeyup="filtrar(this.value)">
+    </div>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+  <a class="boton-uabc" href="<?= ScriptApp.getService().getUrl(); ?>">🏠 Volver al inicio</a>
+</div>
+    <div style="text-align: center; margin-bottom: 20px;">
+      <button class="boton-uabc" onclick="exportar()">📄 Exportar PDF</button>
+    </div>
+
+
+    <? if (propuestas.length > 1) { ?>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Título</th>
+            <th>Proponente</th>
+            <th>Email</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <? for (let i = 1; i < propuestas.length; i++) { ?>
+            <tr>
+              <td data-id="<?= propuestas[i][0] ?>"><?= propuestas[i][0] ?></td>
+              <td><?= new Date(propuestas[i][1]).toLocaleDateString() ?></td>
+              <td><?= propuestas[i][2] ?></td>
+              <td><?= propuestas[i][4] ?> (<?= propuestas[i][5] ?>)</td>
+              <td><?= propuestas[i][6] ?></td>
+              <td><?= propuestas[i][10] ?></td>
+              <td>
+                <button class="boton-uabc" onclick="cambiarEstado('<?= propuestas[i][0] ?>')">Cambiar Estado</button>
+                <button class="boton-uabc" onclick="mostrarDescripcion(`<?= propuestas[i][0] ?>`, `<?= propuestas[i][3].replace(/`/g, "\\`") ?>`)">Revisar</button>
+              </td>
+            </tr>
+          <? } ?>
+        </tbody>
+      </table>
+    <? } else { ?>
+      <p>No hay propuestas registradas.</p>
+    <? } ?>
+  </div>
+
+  <!-- Modal de Descripción -->
+  <div id="modalDescripcion" class="modal-uabc">
+    <div class="modal-contenido">
+      <span class="cerrar" onclick="cerrarModal()">&times;</span>
+      <div id="contenidoDescripcion" style="white-space: pre-wrap;"></div>
+    </div>
+  </div>
+
+  <!-- Modal de Estado -->
+  <div id="modalEstado" class="modal-uabc">
+    <div class="modal-contenido">
+      <span class="cerrar" onclick="cerrarModalEstado()">&times;</span>
+      <h3>Cambiar estado de la propuesta</h3>
+      <p id="infoEstado"></p>
+      <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
+        <button class="boton-uabc" onclick="confirmarEstado('Aprobado')">✅ Aprobar</button>
+        <button class="boton-uabc" onclick="confirmarEstado('Rechazado')">❌ Rechazar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let propuestaSeleccionadaId = null;
+    let celdaIdRef = null;
+
+    function cambiarEstado(id) {
+      propuestaSeleccionadaId = id;
+      celdaIdRef = document.querySelector(`td[data-id='${id}']`);
+      document.getElementById("infoEstado").innerText = `¿Qué acción deseas tomar para la propuesta ID: ${id}?`;
+      document.getElementById("modalEstado").style.display = "block";
+    }
+
+    function confirmarEstado(nuevoEstado) {
+      google.script.run.withSuccessHandler(() => {
+        if (celdaIdRef) {
+          celdaIdRef.style.color = nuevoEstado === 'Aprobado' ? 'green' : 'red';
+          celdaIdRef.parentElement.children[5].textContent = nuevoEstado;
+        }
+
+        cerrarModalEstado();
+        alert(`Estado actualizado a "${nuevoEstado}".`);
+      }).cambiarEstadoPropuesta(propuestaSeleccionadaId, nuevoEstado);
+    }
+
+    function mostrarDescripcion(id, descripcion) {
+      const modal = document.getElementById('modalDescripcion');
+      const contenido = document.getElementById('contenidoDescripcion');
+      contenido.innerHTML = `<strong>ID:</strong> ${id}<br><br><strong>Descripción:</strong><br>${descripcion}`;
+      modal.style.display = 'block';
+    }
+
+    function cerrarModal() {
+      document.getElementById('modalDescripcion').style.display = 'none';
+    }
+
+    function cerrarModalEstado() {
+      document.getElementById('modalEstado').style.display = 'none';
+    }
+
+    function filtrar(valor) {
+      const filas = document.querySelectorAll("tbody tr");
+      filas.forEach(fila => {
+        const titulo = fila.children[2].textContent.toLowerCase();
+        fila.style.display = titulo.includes(valor.toLowerCase()) ? "" : "none";
+      });
+    }
+
+    function exportar() {
+      google.script.run.withSuccessHandler(url => {
+        if (confirm("Exportación completada. ¿Deseas abrir el PDF?")) {
+          window.open(url, '_blank');
+        }
+      }).exportarPropuestas();
+    }
+
+    window.onclick = function(event) {
+      const modal1 = document.getElementById('modalDescripcion');
+      const modal2 = document.getElementById('modalEstado');
+      if (event.target === modal1) modal1.style.display = "none";
+      if (event.target === modal2) modal2.style.display = "none";
+    }
+  </script>
+</body>
+</html>

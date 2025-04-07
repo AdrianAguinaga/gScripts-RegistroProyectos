@@ -1,0 +1,208 @@
+<!-- Formulario.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('CSS'); ?>
+  <style>
+    :root {
+      --verde-uabc: #1C6B3C;
+      --amarillo-uabc: #FFB800;
+      --verde-claro: #c8e6c9;
+      --blanco: #ffffff;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: var(--verde-uabc);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .contenedor-principal {
+      max-width: 800px;
+      margin: 40px auto;
+      background: var(--blanco);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      color: var(--amarillo-uabc);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    form input,
+    form select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 2px solid var(--verde-claro);
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    form textarea {
+      width: 100%;
+      height: 180px; /* más alto para comodidad */
+      padding: 12px;
+      margin: 10px 0;
+      border: 2px solid var(--verde-claro);
+      border-radius: 8px;
+      font-size: 16px;
+      resize: vertical;
+    }
+
+    form input:focus,
+    form textarea:focus,
+    form select:focus {
+      border-color: var(--verde-uabc);
+      outline: none;
+    }
+
+    .boton-uabc {
+      background: var(--amarillo-uabc);
+      color: var(--verde-uabc) !important;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .boton-uabc:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255,184,0,0.3);
+    }
+
+    .enlace-regresar {
+      display: inline-block;
+      margin-top: 20px;
+      text-decoration: none;
+      color: var(--verde-uabc);
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    .enlace-regresar:hover {
+      color: var(--amarillo-uabc);
+    }
+
+    @keyframes entradaSuave {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .alerta {
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      font-size: 16px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+      animation: entradaSuave 0.6s ease-out;
+      text-align: center;
+    }
+
+    .contador-palabras {
+      text-align: right;
+      font-size: 13px;
+      color: #777;
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
+
+    /* ✅ Responsive: mejora en pantallas pequeñas */
+    @media (max-width: 768px) {
+      .contenedor-principal {
+        margin: 20px 10px;
+        padding: 20px;
+      }
+
+      form textarea {
+        height: 150px;
+      }
+
+      .boton-uabc {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor-principal animar-entrada">
+    <h2>📨 Someter Propuesta de Proyecto</h2>
+    <form id="formulario">
+      <input type="text" name="titulo" placeholder="Título del Proyecto" required>
+
+      <textarea name="descripcion" id="descripcion" placeholder="Descripción" required></textarea>
+      <div class="contador-palabras" id="contador">0 / 500 palabras</div>
+
+      <input type="text" name="nombre" placeholder="Nombre del Proponente" required>
+      <input type="text" name="matricula" placeholder="Matrícula del Proponente" required>
+      <input type="email" name="email" placeholder="Correo Electrónico del Proponente" required>
+      <input type="text" name="carrera" placeholder="Carrera del Proponente" required>
+      <input type="number" name="semestre" placeholder="Semestre del Proponente" required>
+      <textarea name="colaboradores" placeholder="Colaboradores (opcional)"></textarea>
+
+      <button type="button" class="boton-uabc" onclick="enviar()">Enviar Propuesta</button>
+      <br>
+      <a class="enlace-regresar" href="<?= ScriptApp.getService().getUrl(); ?>">← Volver al Inicio</a>
+    </form>
+
+    <div id="mensajeExito" class="alerta"></div>
+  </div>
+
+  <script>
+    function enviar() {
+      const form = document.getElementById('formulario');
+      const mensaje = document.getElementById('mensajeExito');
+      const descripcion = document.getElementById('descripcion').value;
+
+      const palabras = descripcion.trim().split(/\s+/);
+      if (palabras.length > 500) {
+        alert("⚠️ La descripción no debe superar las 500 palabras.");
+        return;
+      }
+
+      const formData = new FormData(form);
+      const datos = Object.fromEntries(formData.entries());
+
+      google.script.run.withSuccessHandler(function(id){
+        form.reset();
+        actualizarContador();
+        mensaje.innerHTML = `🎓 <strong>¡Gracias!</strong><br>Tu propuesta fue enviada correctamente.<br><strong>ID:</strong> ${id}`;
+        mensaje.style.display = 'flex';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }).withFailureHandler(function(error){
+        alert('❌ Error al enviar la propuesta:\n' + error.message);
+      }).someterPropuesta(datos);
+    }
+
+    const descripcionInput = document.getElementById('descripcion');
+    const contador = document.getElementById('contador');
+
+    function actualizarContador() {
+      const texto = descripcionInput.value.trim();
+      const cantidad = texto.length > 0 ? texto.split(/\s+/).length : 0;
+      contador.textContent = `${cantidad} / 500 palabras`;
+      contador.style.color = cantidad > 500 ? "red" : "#777";
+    }
+
+    descripcionInput.addEventListener('input', actualizarContador);
+    window.onload = actualizarContador;
+  </script>
+</body>
+</html>
