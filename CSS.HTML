@@ -1,0 +1,219 @@
+<!-- CSS.html -->
+<style>
+    :root {
+      --verde-uabc: #1C6B3C;
+      --amarillo-uabc: #FFB800;
+      --verde-claro: #c8e6c9;
+      --blanco: #ffffff;
+      --gris-texto: #4a5568;
+      --sombra: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+    }
+  
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, var(--verde-uabc) 0%, #16492a 100%);
+      margin: 0;
+      min-height: 100vh;
+      padding: 20px;
+      color: var(--gris-texto);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  
+    h1, h2, h3 {
+      color: var(--verde-uabc);
+      text-align: center;
+    }
+  
+    .contenedor-principal {
+      width: 90%;
+      max-width: 900px;
+      background: var(--blanco);
+      padding: 2.5rem;
+      border-radius: 1rem;
+      box-shadow: var(--sombra);
+      margin: 2rem auto;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+  
+    .contenedor-principal:hover {
+      transform: translateY(-2px);
+    }
+  
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 2px solid var(--verde-claro);
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+  
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--verde-uabc);
+    }
+  
+    button, .boton-principal {
+      background: var(--amarillo-uabc);
+      color: var(--verde-uabc);
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--sombra);
+      text-align: center;
+      display: inline-block;
+    }
+  
+    button:hover, .boton-principal:hover {
+      background: var(--verde-uabc);
+      color: var(--blanco);
+      transform: translateY(-2px);
+    }
+  
+    .boton-uabc {
+      display: inline-block;
+      text-decoration: none;
+      background: var(--verde-uabc);
+      color: var(--blanco);
+      padding: 0.75rem 1.5rem;
+      border-radius: 1.25rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: var(--sombra);
+    }
+  
+    .boton-uabc:hover {
+      background: var(--amarillo-uabc);
+      color: var(--verde-uabc);
+      transform: translateY(-2px);
+    }
+  
+    .loader-central {
+      border: 5px solid var(--verde-claro);
+      border-top: 5px solid var(--amarillo-uabc);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 40px auto;
+    }
+  
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  
+    .card-datos {
+      background: #f9f9f9;
+      border: 2px solid var(--verde-claro);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+  
+    .grid-datos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+      color: var(--gris-texto);
+    }
+  
+    .estado-actual {
+      text-align: center;
+    }
+  
+    .estado-actual span {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #777;
+    }
+  
+    .estado-resaltado {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--verde-uabc);
+      background: var(--amarillo-uabc);
+      display: inline-block;
+      padding: 0.5rem 2rem;
+      border-radius: 999px;
+      margin-top: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+  
+    .card-seccion {
+      background: #fdfdfd;
+      border: 2px solid var(--verde-claro);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+  
+    .card-seccion label {
+      display: block;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      color: var(--verde-uabc);
+      font-size: 1.1rem;
+    }
+  
+    .card-seccion textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+  
+    .mensaje-feedback {
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+  
+    .mensaje-feedback.exito {
+      background-color: #e6f4ea;
+      border: 1px solid #66bb6a;
+      color: #2e7d32;
+    }
+  
+    .mensaje-feedback.error {
+      background-color: #ffecec;
+      border: 1px solid #e57373;
+      color: #c62828;
+    }
+  
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  
+    @media (max-width: 640px) {
+      .contenedor-principal {
+        padding: 1.5rem;
+        margin: 1rem;
+      }
+  
+      h2 {
+        font-size: 1.5rem;
+      }
+  
+      button,
+      a.boton-uabc {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+  
