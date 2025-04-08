@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <base target="_top">
   <?!= include('CSS'); ?>
@@ -26,7 +27,7 @@
       background: var(--blanco);
       padding: 40px;
       border-radius: 15px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     }
 
     h2 {
@@ -41,7 +42,8 @@
       margin-top: 20px;
     }
 
-    th, td {
+    th,
+    td {
       padding: 12px;
       border: 1px solid #ccc;
       text-align: left;
@@ -77,8 +79,10 @@
       display: none;
       position: fixed;
       z-index: 9999;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
       background-color: rgba(0, 0, 0, 0.6);
       padding-top: 100px;
     }
@@ -90,7 +94,7 @@
       border-radius: 12px;
       width: 90%;
       max-width: 400px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .cerrar {
@@ -113,6 +117,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="contenedor-principal animar-entrada">
     <h2>📋 Proyectos Aprobados</h2>
@@ -130,16 +135,24 @@
       <tbody>
         <? for (let i = 1; i < proyectos.length; i++) {
              if (proyectos[i][10] === "Aprobado") { ?>
-          <tr>
-            <td><?= proyectos[i][2] ?></td>
-            <td><?= proyectos[i][4] ?></td>
-            <td><?= proyectos[i][7] ?></td>
-            <td><?= proyectos[i][8] ?></td>
-            <td>
-              <button class="boton-uabc" onclick="abrirModal('<?= proyectos[i][0] ?>')">Acceder</button>
+        <tr>
+          <td>
+            <?= proyectos[i][2] ?>
+          </td>
+          <td>
+            <?= proyectos[i][4] ?>
+          </td>
+          <td>
+            <?= proyectos[i][7] ?>
+          </td>
+          <td>
+            <?= proyectos[i][8] ?>
+          </td>
+          <td>
+            <button class="boton-uabc" onclick="abrirModal('<?= proyectos[i][0] ?>')">Acceder</button>
 
-            </td>
-          </tr>
+          </td>
+        </tr>
         <? } } ?>
       </tbody>
     </table>
@@ -160,66 +173,150 @@
   </div>
 
   <script>
-   let proyectoSeleccionadoId = null;
-  const baseUrl = "<?= baseUrl ?>";
-function abrirModal(id) {
-  proyectoSeleccionadoId = id;
-  document.getElementById("modalAcceso").style.display = "block";
-}
+    let proyectoSeleccionadoId = null;
+    const baseUrl = "<?= baseUrl ?>";
 
-
+    function abrirModal(id) {
+      console.log("abrirModal called with ID:", id); // <-- ADD LOG
+      proyectoSeleccionadoId = id;
+      if (!id) { // Add a check here too
+        console.error("WARNING: abrirModal received an empty or null ID!");
+      }
+      document.getElementById("modalAcceso").style.display = "block";
+      // Optional: Focus the password field
+      document.getElementById("inputPassword").focus();
+    }
 
     function cerrarModal() {
       document.getElementById("modalAcceso").style.display = "none";
       document.getElementById("inputPassword").value = "";
     }
 
-function validarAcceso() {
-  const pass = document.getElementById("inputPassword").value;
-  google.script.run.withSuccessHandler(function(esValido) {
-    if (esValido && proyectoSeleccionadoId) {
-      const destino = baseUrl + "?page=gestion&id=" + proyectoSeleccionadoId;
-      window.location.href = destino;
-    } else {
-      alert("❌ Contraseña incorrecta o ID no definido.");
-    }
-  }).validarAccesoProyecto(proyectoSeleccionadoId, pass);
-}
+    function validarAcceso() {
+      const pass = document.getElementById("inputPassword").value;
+      console.log("validarAcceso called. Current proyectoSeleccionadoId:", proyectoSeleccionadoId); // <-- ADD LOG
 
-function cargarProyectosAprobados() {
-  const contenedor = document.getElementById('lista-proyectos');
-  contenedor.innerHTML = '<div class="cargando">Cargando proyectos...</div>';
-
-  google.script.run
-    .withSuccessHandler(proyectos => {
-      if (proyectos.length === 0) {
-        contenedor.innerHTML = '<p class="vacio">No hay proyectos aprobados</p>';
-        return;
+      // **CRITICAL CHECK**
+      if (!proyectoSeleccionadoId) {
+        alert("Error: No se ha seleccionado ningún proyecto (ID está vacío). Intenta de nuevo.");
+        console.error("validarAcceso attempted with null/empty proyectoSeleccionadoId");
+        cerrarModal(); // Close the modal
+        return; // Stop execution
       }
 
-      let html = '';
-      proyectos.forEach(proyecto => {
-        html += `
+      // Optional: Show a simple loading indicator
+      document.body.style.cursor = 'wait';
+
+        // --- ¡ESTA ES LA PARTE QUE FALTABA! ---
+        google.script.run
+        .withSuccessHandler(function(esValido) {
+          document.body.style.cursor = 'default'; // Restablecer cursor
+          console.log("Server validation returned:", esValido, "for ID:", proyectoSeleccionadoId);
+
+          if (esValido) { // No necesitas chequear proyectoSeleccionadoId de nuevo aquí si pasó el check inicial
+            const destino = baseUrl + "?page=gestion&id=" + proyectoSeleccionadoId;
+            console.log("Password VALID. Preparing redirect to:", destino);
+
+            // Verificar baseUrl (opcional pero buena idea)
+            if (!baseUrl || typeof baseUrl !== 'string' || baseUrl.length < 10) {
+               console.error("baseUrl seems invalid:", baseUrl);
+               alert("Error interno: La URL base de la aplicación no es válida.");
+               return;
+            }
+            // Realizar la redirección
+            window.location.href = destino;
+
+          } else {
+            // La validación falló (contraseña incorrecta o ID no encontrado en servidor)
+            console.log("Password INVALID or ID not validated on server. ID:", proyectoSeleccionadoId);
+            alert("❌ Contraseña incorrecta o error de validación.");
+            // Limpiar contraseña y re-enfocar para nuevo intento
+             document.getElementById("inputPassword").value = "";
+             document.getElementById("inputPassword").focus();
+          }
+        })
+        .withFailureHandler(function(error){
+            document.body.style.cursor = 'default'; // Restablecer cursor en caso de error
+            console.error("Server validation FAILED (FailureHandler):", error);
+            alert("Error al intentar validar el acceso: " + error.message);
+        })
+        .validarAccesoProyecto(proyectoSeleccionadoId, pass); // Llamar a la función del servidor
+        // --- FIN DE LA PARTE QUE FALTABA ---
+
+
+
+
+      function cargarProyectosAprobados() { // <-- DEFINITION IS HERE
+        const contenedor = document.getElementById('lista-proyectos');
+        // Check if the element exists before using it
+        if (!contenedor) {
+          console.error("Element with ID 'lista-proyectos' not found in the HTML.");
+          return; // Exit if the container isn't there
+        }
+        contenedor.innerHTML = '<div class="cargando">Cargando proyectos...</div>';
+
+        google.script.run
+          .withSuccessHandler(proyectos => {
+            // Ensure contenedor still exists (though unlikely to change)
+            const currentContenedor = document.getElementById('lista-proyectos');
+            if (!currentContenedor) return;
+
+            if (!proyectos || !Array.isArray(proyectos)) {
+              console.error("Received invalid data from obtenerPropuestasAprobadas:", proyectos);
+              currentContenedor.innerHTML = '<p class="error">Error: Datos recibidos no válidos.</p>';
+              return;
+            }
+
+            if (proyectos.length === 0) {
+              currentContenedor.innerHTML = '<p class="vacio">No hay proyectos aprobados disponibles.</p>'; // More informative message
+              return;
+            }
+
+            let html = '';
+            proyectos.forEach(proyecto => {
+              // Add checks for potentially missing properties
+              const titulo = proyecto.titulo || 'Sin Título';
+              const nombre = proyecto.nombre || 'Anónimo';
+              const id = proyecto.id; // Assuming ID will always exist if the project does
+
+              if (!id) {
+                console.warn("Project skipped - missing ID:", proyecto);
+                return; // Skip this project if it has no ID
+              }
+
+              // Construct HTML safely - consider escaping content if needed, though less critical here
+              html += `
           <div class="proyecto">
-            <h3>${proyecto.titulo}</h3>
-            <p>Estudiante: ${proyecto.nombre}</p>
-            <a href="${baseUrl}?page=gestion&id=${proyecto.id}" 
-               class="boton-gestionar">
-               Gestionar
-            </a>
+            <h3>${titulo}</h3>
+            <p>Estudiante: ${nombre}</p>
+            <!-- Ensure baseUrl and id are valid before creating the link -->
+            <button onclick="abrirModal('${id}')" class="boton-uabc boton-gestionar">
+               Acceder
+            </button>
+            <!-- Original problematic link removed, using button + abrirModal instead -->
+            <!-- <a href="${baseUrl}?page=gestion&id=${id}"
+                 class="boton-gestionar">
+                 Gestionar
+              </a> -->
           </div>
         `;
-      });
-      contenedor.innerHTML = html;
-    })
-    .withFailureHandler(error => {
-      contenedor.innerHTML = `<p class="error">Error: ${error.message}</p>`;
-    })
-    .obtenerPropuestasAprobadas();
-}
+            });
+            currentContenedor.innerHTML = html;
+          })
+          .withFailureHandler(error => {
+            // Ensure contenedor still exists
+            const currentContenedor = document.getElementById('lista-proyectos');
+            if (!currentContenedor) return;
+            console.error("Failure handler for obtenerPropuestasAprobadas:", error); // Log the error object
+            currentContenedor.innerHTML = `<p class="error">Error al cargar proyectos: ${error.message || 'Error desconocido.'}</p>`;
+          })
+          .obtenerPropuestasAprobadas(); // Make sure this server-side function exists and works
+      }
 
-// Llamar al cargar la página
-document.addEventListener('DOMContentLoaded', cargarProyectosAprobados);
+      // Llamar al cargar la página
+      document.addEventListener('DOMContentLoaded', cargarProyectosAprobados); // <-- CALL IS HERE
+    } // Close the validarAcceso function
   </script>
 </body>
+
 </html>

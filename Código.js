@@ -49,19 +49,45 @@ function include(filename) {
   }
 }
 
+// In Código.js
 function validarAccesoProyecto(id, passIngresada) {
-  const hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Propuestas');
-  const datos = hoja.getDataRange().getValues();
+  Logger.log(`validarAccesoProyecto - Received ID: ${id} (Type: ${typeof id}), Password Attempt: '${passIngresada}'`); // Log input
 
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][0] === id) {
-      const passReal = datos[i][11]; // columna 12 = Contraseña
-      return passIngresada === passReal;
-    }
+  if (!id || !passIngresada) {
+      Logger.log("validarAccesoProyecto - Returning FALSE due to missing ID or Password.");
+      return false; // Explicitly return false if input is bad
   }
-  return false;
-}
 
+  try {
+    const hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Propuestas');
+    if (!hoja) {
+       Logger.log("validarAccesoProyecto - ERROR: Sheet 'Propuestas' not found.");
+       return false; // Or throw error
+    }
+    const datos = hoja.getDataRange().getValues();
+
+    const idToFind = String(id).trim(); // Ensure comparison is consistent
+
+    for (let i = 1; i < datos.length; i++) {
+      const idHoja = datos[i][0] ? String(datos[i][0]).trim() : "";
+      if (idHoja === idToFind) {
+        const passReal = datos[i][11] ? String(datos[i][11]) : ""; // Columna L = Índice 11 (Contraseña)
+        Logger.log(`validarAccesoProyecto - Found matching ID at row ${i+1}. Real Password: '${passReal}'. Comparing with '${passIngresada}'.`);
+
+        const esValido = passIngresada === passReal; // Direct comparison
+        Logger.log(`validarAccesoProyecto - Comparison result: ${esValido}. Returning ${esValido}.`);
+        return esValido;
+      }
+    }
+
+    Logger.log(`validarAccesoProyecto - ID '${idToFind}' not found in sheet. Returning FALSE.`);
+    return false; // ID not found
+
+  } catch (e) {
+     Logger.log(`validarAccesoProyecto - ERROR during execution: ${e.message} \nStack: ${e.stack}`);
+     return false; // Return false on error
+  }
+}
 
 
 function someterPropuesta(datos) {

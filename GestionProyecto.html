@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 
@@ -23,14 +22,16 @@
       margin: 0;
       padding: 20px;
       min-height: 100vh;
-      box-sizing: border-box; /* Include padding in height calculation */
+      box-sizing: border-box;
+      /* Include padding in height calculation */
     }
 
     .contenedor-principal {
       max-width: 900px;
       margin: 30px auto;
       background: var(--blanco);
-      padding: 30px 40px; /* Adjusted padding */
+      padding: 30px 40px;
+      /* Adjusted padding */
       border-radius: 15px;
       box-shadow: 0 8px 16px var(--sombra);
     }
@@ -43,7 +44,8 @@
       width: 50px;
       height: 50px;
       animation: spin 1s linear infinite;
-      position: fixed; /* Or absolute relative to container */
+      position: fixed;
+      /* Or absolute relative to container */
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -51,71 +53,101 @@
     }
 
     @keyframes spin {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(360deg); }
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+
+      100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
     }
 
 
     h2 {
       color: var(--amarillo-uabc);
       text-align: center;
-      margin-bottom: 25px; /* Increased margin */
-      margin-top: 0; /* Remove default top margin */
-      border-bottom: 2px solid var(--verde-claro); /* Add subtle separator */
-      padding-bottom: 15px; /* Space below title */
+      margin-bottom: 25px;
+      /* Increased margin */
+      margin-top: 0;
+      /* Remove default top margin */
+      border-bottom: 2px solid var(--verde-claro);
+      /* Add subtle separator */
+      padding-bottom: 15px;
+      /* Space below title */
     }
 
     .info-proponente {
-        text-align: center;
-        font-size: 15px; /* Slightly smaller */
-        margin-top: -15px; /* Adjust spacing */
-        margin-bottom: 30px; /* Space before next section */
-        color: var(--gris-texto);
-        line-height: 1.6; /* Improve readability */
+      text-align: center;
+      font-size: 15px;
+      /* Slightly smaller */
+      margin-top: -15px;
+      /* Adjust spacing */
+      margin-bottom: 30px;
+      /* Space before next section */
+      color: var(--gris-texto);
+      line-height: 1.6;
+      /* Improve readability */
     }
-     .info-proponente p {
-         margin: 5px 0; /* Tighter paragraph spacing */
-     }
-     .info-proponente strong {
-        color: var(--verde-uabc); /* Highlight labels */
-     }
+
+    .info-proponente p {
+      margin: 5px 0;
+      /* Tighter paragraph spacing */
+    }
+
+    .info-proponente strong {
+      color: var(--verde-uabc);
+      /* Highlight labels */
+    }
 
 
     label {
-        display: block; /* Ensure labels are on their own line */
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: var(--verde-uabc);
+      display: block;
+      /* Ensure labels are on their own line */
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: var(--verde-uabc);
     }
 
     select,
     textarea,
     input[type="url"] {
       width: 100%;
-      padding: 12px; /* Increased padding */
-      margin-bottom: 15px; /* Consistent bottom margin */
+      padding: 12px;
+      /* Increased padding */
+      margin-bottom: 15px;
+      /* Consistent bottom margin */
       border: 2px solid var(--verde-claro);
       border-radius: 8px;
-      box-sizing: border-box; /* Include padding/border in width */
+      box-sizing: border-box;
+      /* Include padding/border in width */
       font-size: 14px;
     }
+
     textarea {
-        min-height: 80px; /* Set a minimum height */
-        resize: vertical; /* Allow vertical resize only */
+      min-height: 80px;
+      /* Set a minimum height */
+      resize: vertical;
+      /* Allow vertical resize only */
     }
 
     .boton-uabc {
       background: var(--amarillo-uabc);
-      color: var(--verde-uabc) !important; /* Ensure text color overrides */
-      padding: 10px 25px; /* Adjusted padding */
+      color: var(--verde-uabc) !important;
+      /* Ensure text color overrides */
+      padding: 10px 25px;
+      /* Adjusted padding */
       border-radius: 20px;
       font-weight: bold;
       border: none;
       cursor: pointer;
-      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; /* Smoother transition */
-      margin-top: 5px; /* Adjust top margin */
-      display: inline-block; /* Needed for margin-top */
-      text-decoration: none; /* Remove underline from link styled as button */
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+      /* Smoother transition */
+      margin-top: 5px;
+      /* Adjust top margin */
+      display: inline-block;
+      /* Needed for margin-top */
+      text-decoration: none;
+      /* Remove underline from link styled as button */
       font-size: 14px;
       text-align: center;
     }
@@ -125,48 +157,62 @@
       box-shadow: 0 4px 12px var(--sombra-hover);
     }
 
-    .nota-informativa { /* Renamed from .nota for clarity */
+    .nota-informativa {
+      /* Renamed from .nota for clarity */
       background: var(--gris-fondo-nota);
       border-left: 4px solid var(--verde-uabc);
-      padding: 15px; /* Increased padding */
-      margin: 20px 0; /* Adjusted margin */
+      padding: 15px;
+      /* Increased padding */
+      margin: 20px 0;
+      /* Adjusted margin */
       font-size: 14px;
       color: var(--gris-texto);
     }
 
     .seccion {
-      margin-bottom: 30px; /* Consistent spacing between sections */
-      padding-bottom: 20px; /* Space below section content */
-      border-bottom: 1px solid var(--verde-claro); /* Separator */
-    }
-    .seccion:last-child {
-        border-bottom: none; /* No border for the last section */
-        margin-bottom: 0;
-        padding-bottom: 0;
+      margin-bottom: 30px;
+      /* Consistent spacing between sections */
+      padding-bottom: 20px;
+      /* Space below section content */
+      border-bottom: 1px solid var(--verde-claro);
+      /* Separator */
     }
 
-    .contenedor-botones-accion { /* Container for buttons within a section */
-        text-align: right; /* Align buttons to the right */
+    .seccion:last-child {
+      border-bottom: none;
+      /* No border for the last section */
+      margin-bottom: 0;
+      padding-bottom: 0;
     }
-     .contenedor-volver { /* Specific styling for the 'Volver' button container */
-        text-align: center;
-        margin-top: 40px;
-     }
+
+    .contenedor-botones-accion {
+      /* Container for buttons within a section */
+      text-align: right;
+      /* Align buttons to the right */
+    }
+
+    .contenedor-volver {
+      /* Specific styling for the 'Volver' button container */
+      text-align: center;
+      margin-top: 40px;
+    }
 
     /* Style for error messages */
     .error-container {
-        text-align: center;
-        color: #D8000C; /* Red color for errors */
-        background-color: #FFD2D2; /* Light red background */
-        border: 1px solid #D8000C;
-        padding: 20px;
-        border-radius: 8px;
+      text-align: center;
+      color: #D8000C;
+      /* Red color for errors */
+      background-color: #FFD2D2;
+      /* Light red background */
+      border: 1px solid #D8000C;
+      padding: 20px;
+      border-radius: 8px;
     }
-     .error-container h2 {
-        color: #D8000C;
-        border-bottom: none;
-     }
 
+    .error-container h2 {
+      color: #D8000C;
+      border-bottom: none;
+    }
   </style>
   <!-- Consider loading Chart.js only if needed for specific views -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
@@ -184,140 +230,105 @@
     // Assume baseUrl is injected by Apps Script templating if needed for links
     const baseUrl = "<?= ScriptApp.getService().getUrl() ?>";
 
-    /**
-     * Function to display error messages prominently.
-     * @param {string} message - The error message to display.
-     */
+   
     function mostrarError(message) {
-      const mainContent = document.getElementById('main-content');
-      if(mainContent) {
-          mainContent.innerHTML = `
-            <div class="error-container">
-              <h2>❌ Error</h2>
-              <p>${message || 'Ocurrió un error inesperado.'}</p>
-              <div class="contenedor-volver" style="margin-top: 20px;">
-                <a class="boton-uabc" href="${baseUrl}?v=1.2">← Volver al Listado</a>
-              </div>
-            </div>`;
-       } else {
-          // Fallback if main-content isn't found
-          document.body.innerHTML = `<div style="padding:20px; color:red; background:white; border-radius: 5px;">Error: ${message}</div>`;
-       }
-       // Remove any existing loaders if error occurs early
-       const loader = document.querySelector('.loader');
-       if (loader) loader.remove();
+      // ... (keep existing code) ...
+      console.error("mostrarError called:", message); // Log when error UI is shown
+      const loader = document.querySelector('.loader');
+      if (loader) {
+        console.log("Removing loader in mostrarError");
+        loader.remove(); // Ensure loader is removed on error
+      }
     }
 
-    /**
-     * Main function executed when the DOM is ready.
-     * Fetches project data and populates the UI.
-     */
     document.addEventListener('DOMContentLoaded', () => {
+      console.log("GestionProyecto DOMContentLoaded"); // Log start
       const mainContent = document.getElementById('main-content');
-      const loader = document.querySelector('.loader'); // Reference the loader
+      const loader = document.querySelector('.loader');
+
+      if (!loader) {
+        console.warn("Loader element not found initially!");
+      } else {
+        console.log("Loader element found.");
+      }
 
       const urlParams = new URLSearchParams(window.location.search);
-      currentProjectId = urlParams.get('id'); // Assign to global variable
+      currentProjectId = urlParams.get('id');
+      console.log("Attempting to get 'id' from URL:", window.location.search);
+      console.log("Extracted Project ID (currentProjectId):", currentProjectId, "(Type:", typeof currentProjectId, ")"); // Log extracted ID
 
       // --- 1. Validate Project ID ---
-      if (!currentProjectId) {
-        mostrarError("No se especificó un ID de proyecto en la URL.");
+      if (!currentProjectId || currentProjectId === 'undefined' || String(currentProjectId).trim() === '') { // More robust check
+        console.error("Invalid or missing Project ID in URL.");
+        mostrarError("No se especificó un ID de proyecto válido en la URL.");
         return;
       }
 
+      console.log("Project ID seems valid, calling backend...");
       // --- 2. Fetch Project Data ---
       google.script.run
         .withSuccessHandler(proyecto => {
-          loader.remove(); // Hide loader on success
+          console.log("obtenerDatosProyecto SUCCESS handler triggered.");
+          // Log the raw data received
+          console.log("Raw data received from backend:", JSON.stringify(proyecto));
+
+          if (loader) {
+            console.log("Removing loader in success handler.");
+            loader.remove(); // Hide loader on success
+          } else {
+            console.warn("Loader element not found in success handler!");
+          }
 
           // --- 3. Validate Received Data ---
-          if (!proyecto) {
-            console.error("Backend returned no project data for ID:", currentProjectId);
-            mostrarError(`No se encontraron datos para el proyecto con ID: ${currentProjectId}. Puede que haya sido eliminado o el ID sea incorrecto.`);
+          if (!proyecto || typeof proyecto !== 'object' || Object.keys(proyecto).length === 0) { // Check if it's a valid object
+            console.error("Backend returned invalid or empty project data for ID:", currentProjectId, "Data:", proyecto);
+            mostrarError(`No se encontraron datos válidos para el proyecto con ID: ${currentProjectId}.`);
             return;
           }
 
-          console.log("Datos recibidos del backend:", proyecto);
+          console.log("Project data received and seems valid. Attempting to populate UI...");
+          try { // Wrap UI population in try...catch
+            // --- 4. Populate UI ---
+            mainContent.innerHTML = `
+           <h2 id="tituloProyecto">📌 Proyecto: ${proyecto.titulo || 'Sin Título'}</h2>
+           // ... (rest of your innerHTML template) ...
+         `;
+            console.log("UI Population successful.");
 
-          // --- 4. Populate UI ---
-          // Use default values (e.g., 'N/A', empty string) if a field might be missing
-          mainContent.innerHTML = `
-            <h2 id="tituloProyecto">📌 Proyecto: ${proyecto.titulo || 'Sin Título'}</h2>
+            // Set dropdown value explicitly AFTER innerHTML is set
+            const estadoSelect = document.getElementById('estado');
+            if (estadoSelect && proyecto.estado) {
+              estadoSelect.value = proyecto.estado;
+              console.log("Set estado dropdown to:", proyecto.estado);
+            } else if (estadoSelect) {
+              estadoSelect.value = 'Aprobado'; // Default if not set
+              console.log("Set estado dropdown to default 'Aprobado'.");
+            }
 
-            <div class="info-proponente">
-              <p><strong>Nombre:</strong> <span id="nombreProponente">${proyecto.nombre || 'N/A'}</span> |
-                 <strong>Matrícula:</strong> <span id="matriculaProponente">${proyecto.matricula || 'N/A'}</span>
-              </p>
-              <p><strong>Carrera:</strong> <span id="carreraProponente">${proyecto.carrera || 'N/A'}</span> |
-                 <strong>Semestre:</strong> <span id="semestreProponente">${proyecto.semestre || 'N/A'}</span>
-              </p>
-              <p><strong>Correo:</strong> <span id="emailProponente">${proyecto.email || 'N/A'}</span></p>
-            </div>
-
-            <div class="seccion">
-              <label for="estado">Estado actual del proyecto:</label>
-              <select id="estado">
-                <option value="Aprobado" ${proyecto.estado === 'Aprobado' ? 'selected' : ''}>Aprobado</option>
-                <option value="Iniciado" ${proyecto.estado === 'Iniciado' ? 'selected' : ''}>Iniciado</option>
-                <option value="En Diseño" ${proyecto.estado === 'En Diseño' ? 'selected' : ''}>En Diseño</option>
-                <option value="En Desarrollo" ${proyecto.estado === 'En Desarrollo' ? 'selected' : ''}>En Desarrollo</option>
-                <option value="Pruebas" ${proyecto.estado === 'Pruebas' ? 'selected' : ''}>Pruebas</option>
-                <option value="Finalizado" ${proyecto.estado === 'Finalizado' ? 'selected' : ''}>Finalizado</option>
-                <option value="Cancelado" ${proyecto.estado === 'Cancelado' ? 'selected' : ''}>Cancelado</option>
-                <option value="Detenido" ${proyecto.estado === 'Detenido' ? 'selected' : ''}>Detenido</option>
-              </select>
-              <div class="contenedor-botones-accion">
-                 <button class="boton-uabc" onclick="cambiarEstado()">Guardar Estado</button>
-              </div>
-            </div>
-
-            <div class="seccion">
-              <label for="nota">Agregar nota de avance o comentario:</label>
-              <textarea id="nota" placeholder="Escribe aquí..."></textarea>
-              <div class="contenedor-botones-accion">
-                <button class="boton-uabc" onclick="agregarNota()">Guardar Nota</button>
-              </div>
-              <!-- Placeholder for displaying existing notes if needed -->
-              <!-- <div id="notas-existentes" class="nota-informativa" style="margin-top: 15px;">Notas Anteriores: ...</div> -->
-            </div>
-
-            <div class="seccion">
-              <label for="repositorio">🔗 Enlace al repositorio (GitHub, GitLab, etc.):</label>
-              <input type="url" id="repositorio" placeholder="https://github.com/usuario/proyecto" value="${proyecto.repositorio || ''}">
-               <div class="contenedor-botones-accion">
-                  <button class="boton-uabc" onclick="guardarRepositorio()">Guardar Repositorio</button>
-               </div>
-            </div>
-
-            <div class="contenedor-volver">
-              <a class="boton-uabc" href="${baseUrl}?v=1.2">← Volver al Listado</a>
-            </div>
-          `;
-
-          // Set dropdown value explicitly (safer than relying only on selected attribute)
-          const estadoSelect = document.getElementById('estado');
-          if (estadoSelect && proyecto.estado) {
-            estadoSelect.value = proyecto.estado;
-          } else if (estadoSelect) {
-            estadoSelect.value = 'Aprobado'; // Default if not set
+          } catch (uiError) {
+            console.error("ERROR during UI population:", uiError);
+            mostrarError(`Error al mostrar los datos del proyecto: ${uiError.message}`);
           }
-
         })
         .withFailureHandler(error => {
-          loader.remove(); // Hide loader on failure
-          console.error("Error al llamar a obtenerDatosProyecto:", error);
-          mostrarError(`No se pudo cargar la información del proyecto. Error: ${error.message}`);
+          console.error("obtenerDatosProyecto FAILURE handler triggered.");
+          console.error("Error details:", error); // Log the full error object
+          if (loader) {
+            console.log("Removing loader in failure handler.");
+            loader.remove(); // Hide loader on failure
+          } else {
+            console.warn("Loader element not found in failure handler!");
+          }
+          mostrarError(`No se pudo cargar la información del proyecto. Error: ${error.message || 'Error desconocido del servidor.'}`);
         })
         .obtenerDatosProyecto(currentProjectId); // <-- Call backend function with ID
+      console.log("google.script.run.obtenerDatosProyecto called with ID:", currentProjectId);
     });
 
-    /**
-     * Sends the selected state to the backend.
-     */
     function cambiarEstado() {
       if (!currentProjectId) {
-          mostrarError("Error: No se ha cargado un ID de proyecto válido.");
-          return;
+        mostrarError("Error: No se ha cargado un ID de proyecto válido.");
+        return;
       }
       const estadoSelect = document.getElementById('estado');
       if (!estadoSelect) return; // Element not found
@@ -331,15 +342,15 @@
 
       google.script.run
         .withSuccessHandler(() => {
-            alert("✅ Estado actualizado correctamente a: " + nuevoEstado);
-            button.disabled = false;
-            button.textContent = 'Guardar Estado';
+          alert("✅ Estado actualizado correctamente a: " + nuevoEstado);
+          button.disabled = false;
+          button.textContent = 'Guardar Estado';
         })
         .withFailureHandler(error => {
-            alert(`❌ Error al actualizar el estado: ${error.message}`);
-            console.error("Error en cambiarEstadoProyecto:", error);
-            button.disabled = false;
-            button.textContent = 'Guardar Estado';
+          alert(`❌ Error al actualizar el estado: ${error.message}`);
+          console.error("Error en cambiarEstadoProyecto:", error);
+          button.disabled = false;
+          button.textContent = 'Guardar Estado';
         })
         .cambiarEstadoProyecto(currentProjectId, nuevoEstado);
     }
@@ -348,9 +359,9 @@
      * Sends a new note to the backend.
      */
     function agregarNota() {
-       if (!currentProjectId) {
-          mostrarError("Error: No se ha cargado un ID de proyecto válido.");
-          return;
+      if (!currentProjectId) {
+        mostrarError("Error: No se ha cargado un ID de proyecto válido.");
+        return;
       }
       const notaTextarea = document.getElementById('nota');
       if (!notaTextarea) return; // Element not found
@@ -367,18 +378,18 @@
 
       google.script.run
         .withSuccessHandler(() => {
-            alert("📝 Nota agregada correctamente.");
-            notaTextarea.value = ""; // Clear the textarea
-            button.disabled = false;
-            button.textContent = 'Guardar Nota';
-            // Optional: Refresh notes section if they are displayed on the page
-            // cargarNotas(); // Example function call
+          alert("📝 Nota agregada correctamente.");
+          notaTextarea.value = ""; // Clear the textarea
+          button.disabled = false;
+          button.textContent = 'Guardar Nota';
+          // Optional: Refresh notes section if they are displayed on the page
+          // cargarNotas(); // Example function call
         })
         .withFailureHandler(error => {
-            alert(`❌ Error al agregar la nota: ${error.message}`);
-            console.error("Error en agregarNotaProyecto:", error);
-             button.disabled = false;
-            button.textContent = 'Guardar Nota';
+          alert(`❌ Error al agregar la nota: ${error.message}`);
+          console.error("Error en agregarNotaProyecto:", error);
+          button.disabled = false;
+          button.textContent = 'Guardar Nota';
         })
         .agregarNotaProyecto(currentProjectId, texto);
     }
@@ -387,35 +398,35 @@
      * Sends the repository link to the backend.
      */
     function guardarRepositorio() {
-       if (!currentProjectId) {
-          mostrarError("Error: No se ha cargado un ID de proyecto válido.");
-          return;
+      if (!currentProjectId) {
+        mostrarError("Error: No se ha cargado un ID de proyecto válido.");
+        return;
       }
       const repositorioInput = document.getElementById('repositorio');
       if (!repositorioInput) return; // Element not found
       const link = repositorioInput.value.trim();
 
-       // Basic validation (optional but recommended)
-       if (link && !link.startsWith('http://') && !link.startsWith('https://')) {
-           alert('⚠️ El enlace del repositorio debe empezar con http:// o https://');
-           return;
-       }
+      // Basic validation (optional but recommended)
+      if (link && !link.startsWith('http://') && !link.startsWith('https://')) {
+        alert('⚠️ El enlace del repositorio debe empezar con http:// o https://');
+        return;
+      }
 
-       const button = event.target;
-       button.disabled = true;
-       button.textContent = 'Guardando...';
+      const button = event.target;
+      button.disabled = true;
+      button.textContent = 'Guardando...';
 
       google.script.run
         .withSuccessHandler(() => {
-            alert("🔗 Repositorio actualizado correctamente.");
-            button.disabled = false;
-            button.textContent = 'Guardar Repositorio';
+          alert("🔗 Repositorio actualizado correctamente.");
+          button.disabled = false;
+          button.textContent = 'Guardar Repositorio';
         })
         .withFailureHandler(error => {
-            alert(`❌ Error al guardar el repositorio: ${error.message}`);
-            console.error("Error en guardarRepositorioProyecto:", error);
-             button.disabled = false;
-            button.textContent = 'Guardar Repositorio';
+          alert(`❌ Error al guardar el repositorio: ${error.message}`);
+          console.error("Error en guardarRepositorioProyecto:", error);
+          button.disabled = false;
+          button.textContent = 'Guardar Repositorio';
         })
         .guardarRepositorioProyecto(currentProjectId, link);
     }
@@ -424,5 +435,3 @@
 </body>
 
 </html>
-
-
