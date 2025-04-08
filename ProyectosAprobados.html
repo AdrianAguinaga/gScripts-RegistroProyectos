@@ -5,7 +5,6 @@
   <base target="_top">
   <?!= include('CSS'); ?>
   <style>
-    /* Reutilizamos estilo UABC */
     :root {
       --verde-uabc: #1C6B3C;
       --amarillo-uabc: #FFB800;
@@ -42,8 +41,7 @@
       margin-top: 20px;
     }
 
-    th,
-    td {
+    th, td {
       padding: 12px;
       border: 1px solid #ccc;
       text-align: left;
@@ -74,7 +72,6 @@
       transform: translateY(-2px);
     }
 
-    /* Modal */
     .modal-uabc {
       display: none;
       position: fixed;
@@ -133,27 +130,17 @@
         </tr>
       </thead>
       <tbody>
-        <? for (let i = 1; i < proyectos.length; i++) {
-             if (proyectos[i][10] === "Aprobado") { ?>
+        <? for (let i = 1; i < proyectos.length; i++) { ?>
         <tr>
-          <td>
-            <?= proyectos[i][2] ?>
-          </td>
-          <td>
-            <?= proyectos[i][4] ?>
-          </td>
-          <td>
-            <?= proyectos[i][7] ?>
-          </td>
-          <td>
-            <?= proyectos[i][8] ?>
-          </td>
+          <td><?= proyectos[i][2] ?></td>
+          <td><?= proyectos[i][4] ?></td>
+          <td><?= proyectos[i][7] ?></td>
+          <td><?= proyectos[i][8] ?></td>
           <td>
             <button class="boton-uabc" onclick="abrirModal('<?= proyectos[i][0] ?>')">Acceder</button>
-
           </td>
         </tr>
-        <? } } ?>
+        <? } ?>
       </tbody>
     </table>
 
@@ -162,7 +149,6 @@
     </div>
   </div>
 
-  <!-- Modal de contraseña -->
   <div id="modalAcceso" class="modal-uabc">
     <div class="modal-contenido">
       <span class="cerrar" onclick="cerrarModal()">&times;</span>
@@ -174,16 +160,11 @@
 
   <script>
     let proyectoSeleccionadoId = null;
-    const baseUrl = "<?= baseUrl ?>";
+    const baseUrl = "<?= ScriptApp.getService().getUrl(); ?>";
 
     function abrirModal(id) {
-      console.log("abrirModal called with ID:", id); // <-- ADD LOG
       proyectoSeleccionadoId = id;
-      if (!id) { // Add a check here too
-        console.error("WARNING: abrirModal received an empty or null ID!");
-      }
       document.getElementById("modalAcceso").style.display = "block";
-      // Optional: Focus the password field
       document.getElementById("inputPassword").focus();
     }
 
@@ -194,128 +175,31 @@
 
     function validarAcceso() {
       const pass = document.getElementById("inputPassword").value;
-      console.log("validarAcceso called. Current proyectoSeleccionadoId:", proyectoSeleccionadoId); // <-- ADD LOG
-
-      // **CRITICAL CHECK**
       if (!proyectoSeleccionadoId) {
-        alert("Error: No se ha seleccionado ningún proyecto (ID está vacío). Intenta de nuevo.");
-        console.error("validarAcceso attempted with null/empty proyectoSeleccionadoId");
-        cerrarModal(); // Close the modal
-        return; // Stop execution
+        alert("Error: No se seleccionó ningún proyecto.");
+        cerrarModal();
+        return;
       }
 
-      // Optional: Show a simple loading indicator
       document.body.style.cursor = 'wait';
 
-        // --- ¡ESTA ES LA PARTE QUE FALTABA! ---
-        google.script.run
+      google.script.run
         .withSuccessHandler(function(esValido) {
-          document.body.style.cursor = 'default'; // Restablecer cursor
-          console.log("Server validation returned:", esValido, "for ID:", proyectoSeleccionadoId);
-
-          if (esValido) { // No necesitas chequear proyectoSeleccionadoId de nuevo aquí si pasó el check inicial
-            const destino = baseUrl + "?page=gestion&id=" + proyectoSeleccionadoId;
-            console.log("Password VALID. Preparing redirect to:", destino);
-
-            // Verificar baseUrl (opcional pero buena idea)
-            if (!baseUrl || typeof baseUrl !== 'string' || baseUrl.length < 10) {
-               console.error("baseUrl seems invalid:", baseUrl);
-               alert("Error interno: La URL base de la aplicación no es válida.");
-               return;
-            }
-            // Realizar la redirección
-            window.location.href = destino;
-
+          document.body.style.cursor = 'default';
+          if (esValido) {
+            window.location.href = baseUrl + "?page=gestion&id=" + proyectoSeleccionadoId;
           } else {
-            // La validación falló (contraseña incorrecta o ID no encontrado en servidor)
-            console.log("Password INVALID or ID not validated on server. ID:", proyectoSeleccionadoId);
-            alert("❌ Contraseña incorrecta o error de validación.");
-            // Limpiar contraseña y re-enfocar para nuevo intento
-             document.getElementById("inputPassword").value = "";
-             document.getElementById("inputPassword").focus();
+            alert("❌ Contraseña incorrecta o error en validación.");
+            document.getElementById("inputPassword").value = "";
+            document.getElementById("inputPassword").focus();
           }
         })
         .withFailureHandler(function(error){
-            document.body.style.cursor = 'default'; // Restablecer cursor en caso de error
-            console.error("Server validation FAILED (FailureHandler):", error);
-            alert("Error al intentar validar el acceso: " + error.message);
+          document.body.style.cursor = 'default';
+          alert("Error: " + error.message);
         })
-        .validarAccesoProyecto(proyectoSeleccionadoId, pass); // Llamar a la función del servidor
-        // --- FIN DE LA PARTE QUE FALTABA ---
-
-
-
-
-      function cargarProyectosAprobados() { // <-- DEFINITION IS HERE
-        const contenedor = document.getElementById('lista-proyectos');
-        // Check if the element exists before using it
-        if (!contenedor) {
-          console.error("Element with ID 'lista-proyectos' not found in the HTML.");
-          return; // Exit if the container isn't there
-        }
-        contenedor.innerHTML = '<div class="cargando">Cargando proyectos...</div>';
-
-        google.script.run
-          .withSuccessHandler(proyectos => {
-            // Ensure contenedor still exists (though unlikely to change)
-            const currentContenedor = document.getElementById('lista-proyectos');
-            if (!currentContenedor) return;
-
-            if (!proyectos || !Array.isArray(proyectos)) {
-              console.error("Received invalid data from obtenerPropuestasAprobadas:", proyectos);
-              currentContenedor.innerHTML = '<p class="error">Error: Datos recibidos no válidos.</p>';
-              return;
-            }
-
-            if (proyectos.length === 0) {
-              currentContenedor.innerHTML = '<p class="vacio">No hay proyectos aprobados disponibles.</p>'; // More informative message
-              return;
-            }
-
-            let html = '';
-            proyectos.forEach(proyecto => {
-              // Add checks for potentially missing properties
-              const titulo = proyecto.titulo || 'Sin Título';
-              const nombre = proyecto.nombre || 'Anónimo';
-              const id = proyecto.id; // Assuming ID will always exist if the project does
-
-              if (!id) {
-                console.warn("Project skipped - missing ID:", proyecto);
-                return; // Skip this project if it has no ID
-              }
-
-              // Construct HTML safely - consider escaping content if needed, though less critical here
-              html += `
-          <div class="proyecto">
-            <h3>${titulo}</h3>
-            <p>Estudiante: ${nombre}</p>
-            <!-- Ensure baseUrl and id are valid before creating the link -->
-            <button onclick="abrirModal('${id}')" class="boton-uabc boton-gestionar">
-               Acceder
-            </button>
-            <!-- Original problematic link removed, using button + abrirModal instead -->
-            <!-- <a href="${baseUrl}?page=gestion&id=${id}"
-                 class="boton-gestionar">
-                 Gestionar
-              </a> -->
-          </div>
-        `;
-            });
-            currentContenedor.innerHTML = html;
-          })
-          .withFailureHandler(error => {
-            // Ensure contenedor still exists
-            const currentContenedor = document.getElementById('lista-proyectos');
-            if (!currentContenedor) return;
-            console.error("Failure handler for obtenerPropuestasAprobadas:", error); // Log the error object
-            currentContenedor.innerHTML = `<p class="error">Error al cargar proyectos: ${error.message || 'Error desconocido.'}</p>`;
-          })
-          .obtenerPropuestasAprobadas(); // Make sure this server-side function exists and works
-      }
-
-      // Llamar al cargar la página
-      document.addEventListener('DOMContentLoaded', cargarProyectosAprobados); // <-- CALL IS HERE
-    } // Close the validarAcceso function
+        .validarAccesoProyecto(proyectoSeleccionadoId, pass);
+    }
   </script>
 </body>
 
