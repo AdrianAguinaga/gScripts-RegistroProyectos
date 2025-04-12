@@ -164,3 +164,115 @@ function guardarRepositorioProyecto(id, link) {
     }
   }
 }
+
+
+function someterPropuesta(datos) {
+  try {
+    Logger.log("Iniciando someterPropuesta con datos: " + JSON.stringify(datos));
+    
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const hoja = ss.getSheetByName('Propuestas');
+    if (!hoja) {
+      Logger.log("Error: La hoja 'Propuestas' no existe.");
+      throw new Error("La hoja 'Propuestas' no existe.");
+    }
+
+    const id = generarUUID();
+    const fecha = new Date();
+    const contraseña = generarContraseña();
+
+    Logger.log("Añadiendo fila con ID: " + id);
+    
+    hoja.appendRow([
+      id,
+      fecha,
+      datos.titulo,
+      datos.descripcion,
+      datos.nombre,
+      datos.matricula,
+      datos.email,
+      datos.carrera,
+      datos.semestre,
+      datos.colaboradores || "",
+      "Pendiente",
+      contraseña,
+      JSON.stringify([]),
+      JSON.stringify([]),
+      "",
+      fecha
+    ]);
+
+    Logger.log("Propuesta añadida con éxito, ID: " + id);
+    return id;
+  } catch (error) {
+    Logger.log("Error en someterPropuesta: " + error.toString());
+    throw error;
+  }
+}
+
+function cambiarEstadoPropuesta(id, nuevoEstado) {
+  const hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Propuestas');
+  const datos = hoja.getDataRange().getValues();
+
+  for (let i = 1; i < datos.length; i++) {
+    if (datos[i][0] === id) {
+      hoja.getRange(i + 1, 11).setValue(nuevoEstado);
+      hoja.getRange(i + 1, 17).setValue(new Date());
+
+      const historial = JSON.parse(datos[i][12] || "[]");
+      historial.push({ estado: nuevoEstado, fecha: new Date().toISOString() });
+      hoja.getRange(i + 1, 13).setValue(JSON.stringify(historial));
+      return;
+    }
+  }
+  throw new Error("Proyecto no encontrado para actualizar estado");
+}
+// En Código.js, función de servidor
+function escaparHTML(texto) {
+  if (!texto) return '';
+  return texto.replace(/[&<>"']/g, function(match) {
+    const caracteres = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    };
+    return caracteres[match];
+  });
+}
+
+function generarUUID() {
+  const chars = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.split('');
+  for (let i = 0, len = chars.length; i < len; i++) {
+    switch (chars[i]) {
+      case 'x':
+        chars[i] = Math.floor(Math.random() * 16).toString(16);
+        break;
+      case 'y':
+        chars[i] = (Math.floor(Math.random() * 4) + 8).toString(16);
+        break;
+    }
+  }
+  return chars.join('');
+}
+
+function generarContraseña(longitud = 10) {
+  const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let contraseña = '';
+  for (let i = 0; i < longitud; i++) {
+    contraseña += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+  }
+  return contraseña;
+}
+function enviarCorreo(destinatario, asunto, mensaje) {
+  try {
+    MailApp.sendEmail({
+      to: destinatario,
+      subject: asunto,
+      htmlBody: mensaje
+    });
+  } catch (error) {
+    Logger.log(`Error al enviar correo: ${error}`);
+  }
+}

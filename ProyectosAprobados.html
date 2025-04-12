@@ -1,211 +1,114 @@
+<!-- ProyectosAprobados.html -->
 <!DOCTYPE html>
 <html>
+  <head>
+    <base target="_top" />
+    <!-- Incluir el CSS unificado -->
+    <?!= include("CSS"); ?>
+  </head>
+  <body>
+    <!-- Puedes incluir Utils y Components si lo deseas -->
+    <?!= include("Utils"); ?>
+    <?!= include("Components"); ?>
 
-<head>
-  <base target="_top">
-  
+    <div id="feedback-global" class="feedback-global oculto"></div>
 
+    <div class="contenedor-principal animar-entrada">
+      <h2>📋 Proyectos Aprobados</h2>
 
- 
-  <style>
-    :root {
-      --verde-uabc: #1C6B3C;
-      --amarillo-uabc: #FFB800;
-      --verde-claro: #c8e6c9;
-      --blanco: #ffffff;
-    }
+      <table>
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Proponente</th>
+            <th>Carrera</th>
+            <th>Semestre</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <? for (let i = 1; i < proyectos.length; i++) { ?>
+          <tr>
+            <td><?= proyectos[i][2] ?></td>
+            <td><?= proyectos[i][4] ?></td>
+            <td><?= proyectos[i][7] ?></td>
+            <td><?= proyectos[i][8] ?></td>
+            <td>
+              <button
+                class="boton-uabc"
+                onclick="abrirModal('<?= proyectos[i][0] ?>')"
+              >
+                Acceder
+              </button>
+            </td>
+          </tr>
+          <? } ?>
+        </tbody>
+      </table>
 
-    body {
-      font-family: 'Arial', sans-serif;
-      background: var(--verde-uabc);
-      margin: 0;
-      padding: 20px;
-      min-height: 100vh;
-    }
-
-    .contenedor-principal {
-      max-width: 1000px;
-      margin: 30px auto;
-      background: var(--blanco);
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    }
-
-    h2 {
-      text-align: center;
-      color: var(--amarillo-uabc);
-      margin-bottom: 30px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    th, td {
-      padding: 12px;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-
-    th {
-      background: var(--verde-uabc);
-      color: var(--blanco);
-    }
-
-    tr:nth-child(even) {
-      background: #f9f9f9;
-    }
-
-    .boton-uabc {
-      background: var(--amarillo-uabc);
-      color: var(--verde-uabc);
-      border: none;
-      padding: 10px 20px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .boton-uabc:hover {
-      background-color: #ffd54f;
-      transform: translateY(-2px);
-    }
-
-    .modal-uabc {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.6);
-      padding-top: 100px;
-    }
-
-    .modal-contenido {
-      background: var(--blanco);
-      margin: auto;
-      padding: 30px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .cerrar {
-      float: right;
-      font-size: 20px;
-      cursor: pointer;
-      color: var(--verde-uabc);
-    }
-
-    .cerrar:hover {
-      color: red;
-    }
-
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0 20px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="feedback-global" class="feedback-global oculto"></div>
-
-  <div class="contenedor-principal animar-entrada">
-    <h2>📋 Proyectos Aprobados</h2>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Título</th>
-          <th>Proponente</th>
-          <th>Carrera</th>
-          <th>Semestre</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <? for (let i = 1; i < proyectos.length; i++) { ?>
-        <tr>
-          <td><?= proyectos[i][2] ?></td>
-          <td><?= proyectos[i][4] ?></td>
-          <td><?= proyectos[i][7] ?></td>
-          <td><?= proyectos[i][8] ?></td>
-          <td>
-            <button class="boton-uabc" onclick="abrirModal('<?= proyectos[i][0] ?>')">Acceder</button>
-          </td>
-        </tr>
-        <? } ?>
-      </tbody>
-    </table>
-
-    <div style="text-align: center; margin-top: 30px;">
-      <a class="boton-uabc" href="<?= ScriptApp.getService().getUrl(); ?>">← Volver al inicio</a>
+      <div style="text-align: center; margin-top: 30px">
+        <a class="boton-uabc" href="<?= ScriptApp.getService().getUrl(); ?>"
+          >← Volver al inicio</a
+        >
+      </div>
     </div>
-  </div>
 
-  <div id="modalAcceso" class="modal-uabc">
-    <div class="modal-contenido">
-      <span class="cerrar" onclick="cerrarModal()">&times;</span>
-      <h3>🔒 Ingresar contraseña</h3>
-      <input type="password" id="inputPassword" placeholder="Contraseña del proyecto">
-      <button class="boton-uabc" onclick="validarAcceso()">Entrar</button>
+    <div id="modalAcceso" class="modal-uabc">
+      <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal()">&times;</span>
+        <h3>🔒 Ingresar contraseña</h3>
+        <input
+          type="password"
+          id="inputPassword"
+          placeholder="Contraseña del proyecto"
+        />
+        <button class="boton-uabc" onclick="validarAcceso()">Entrar</button>
+      </div>
     </div>
-  </div>
 
-  <script>
-    let proyectoSeleccionadoId = null;
-    const baseUrl = "<?= ScriptApp.getService().getUrl(); ?>";
+    <script>
+      let proyectoSeleccionadoId = null;
+      const baseUrl = "<?= baseUrl ?>";
 
-    function abrirModal(id) {
-      proyectoSeleccionadoId = id;
-      document.getElementById("modalAcceso").style.display = "block";
-      document.getElementById("inputPassword").focus();
-    }
-
-    function cerrarModal() {
-      document.getElementById("modalAcceso").style.display = "none";
-      document.getElementById("inputPassword").value = "";
-    }
-
-    function validarAcceso() {
-      const pass = document.getElementById("inputPassword").value;
-      if (!proyectoSeleccionadoId) {
-        alert("Error: No se seleccionó ningún proyecto.");
-        cerrarModal();
-        return;
+      function abrirModal(id) {
+        proyectoSeleccionadoId = id;
+        document.getElementById("modalAcceso").style.display = "block";
+        document.getElementById("inputPassword").focus();
       }
 
-      document.body.style.cursor = 'wait';
+      function cerrarModal() {
+        document.getElementById("modalAcceso").style.display = "none";
+        document.getElementById("inputPassword").value = "";
+      }
 
-      google.script.run
-        .withSuccessHandler(function(esValido) {
-          document.body.style.cursor = 'default';
-          if (esValido) {
-            window.location.href = baseUrl + "?page=gestion&id=" + proyectoSeleccionadoId;
-          } else {
-            alert("❌ Contraseña incorrecta o error en validación.");
-            document.getElementById("inputPassword").value = "";
-            document.getElementById("inputPassword").focus();
-          }
-        })
-        .withFailureHandler(function(error){
-          document.body.style.cursor = 'default';
-          alert("Error: " + error.message);
-        })
-        .validarAccesoProyecto(proyectoSeleccionadoId, pass);
-    }
-  </script>
-</body>
+      function validarAcceso() {
+        const pass = document.getElementById("inputPassword").value;
+        if (!proyectoSeleccionadoId) {
+          alert("Error: No se seleccionó ningún proyecto.");
+          cerrarModal();
+          return;
+        }
 
+        document.body.style.cursor = "wait";
+
+        google.script.run
+          .withSuccessHandler(function (esValido) {
+            document.body.style.cursor = "default";
+            if (esValido) {
+              window.location.href =
+                baseUrl + "?page=gestion&id=" + proyectoSeleccionadoId;
+            } else {
+              alert("❌ Contraseña incorrecta o error en validación.");
+              document.getElementById("inputPassword").value = "";
+              document.getElementById("inputPassword").focus();
+            }
+          })
+          .withFailureHandler(function (error) {
+            document.body.style.cursor = "default";
+            mostrarFeedback("Error al validar: " + error.message, "error");
+          })
+          .validarAccesoProyecto(proyectoSeleccionadoId, pass);
+      }
+    </script>
+  </body>
 </html>

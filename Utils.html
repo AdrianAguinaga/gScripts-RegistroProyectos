@@ -1,57 +1,16 @@
 <!-- Utils.html -->
-<style>
-    .feedback-global {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 9999;
-      max-width: 90%;
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      font-weight: 600;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      font-size: 1rem;
-      opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-  
-    .feedback-global.exito {
-      background-color: #e6f4ea;
-      color: #2e7d32;
-      border: 1px solid #66bb6a;
-    }
-  
-    .feedback-global.error {
-      background-color: #ffecec;
-      color: #c62828;
-      border: 1px solid #e57373;
-    }
-  
-    .feedback-global.mostrar {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-  
-    .feedback-global.oculto {
-      opacity: 0;
-      pointer-events: none;
-    }
-  </style>
-  
-  <script>
-    function mostrarFeedback(mensaje, tipo = "exito", duracion = 3000) {
-      const feedback = document.getElementById("feedback-global");
-      if (!feedback) return;
-  
-      feedback.textContent = mensaje;
-      feedback.className = `feedback-global ${tipo} mostrar`;
-  
-      setTimeout(() => {
-        feedback.classList.remove("mostrar");
-        feedback.classList.add("oculto");
-      }, duracion);
-    }
-  </script>
-  
+<!-- Sin estilos, solo el script de feedback -->
+<script>
+  function mostrarFeedback(mensaje, tipo = "exito", duracion = 3000) {
+    const feedback = document.getElementById("feedback-global");
+    if (!feedback) return;
+
+    feedback.textContent = mensaje;
+    feedback.className = `feedback-global ${tipo} mostrar`;
+
+    setTimeout(() => {
+      feedback.classList.remove("mostrar");
+      feedback.classList.add("oculto");
+    }, duracion);
+  }
+</script>

@@ -1,25 +1,9 @@
 <!-- Components.html -->
+<!-- Loader y Modal Global, SIN estilos, porque están en CSS.html -->
 
-<!-- Loader -->
-<style>
-    .loader-central {
-      border: 5px solid var(--verde-claro);
-      border-top: 5px solid var(--amarillo-uabc);
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      animation: spin 1s linear infinite;
-      margin: 40px auto;
-    }
-  
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
-  
+<!-- Loader (ya no hay <style>... porque lo movimos) -->
   <div id="loader-global" class="loader-central oculto"></div>
-  
+
   <script>
     function mostrarLoader() {
       const loader = document.getElementById('loader-global');
@@ -32,73 +16,7 @@
     }
   </script>
   
-  <!-- Botón principal reutilizable -->
-  <style>
-    .boton-principal {
-      background: var(--amarillo-uabc);
-      color: var(--verde-uabc);
-      padding: 0.75rem 1.5rem;
-      border: none;
-      border-radius: 1.25rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: var(--sombra);
-      display: inline-block;
-      text-align: center;
-      font-size: 1rem;
-    }
-  
-    .boton-principal:hover {
-      background: var(--verde-uabc);
-      color: var(--blanco);
-      transform: translateY(-2px);
-    }
-  </style>
-  
-  <!-- Modal reutilizable -->
-  <style>
-    .modal-global {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-    }
-  
-    .modal-global .contenido {
-      background: var(--blanco);
-      padding: 2rem;
-      border-radius: 12px;
-      max-width: 500px;
-      width: 90%;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-      animation: entradaSuave 0.4s ease;
-    }
-  
-    @keyframes entradaSuave {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  
-    .modal-global .cerrar {
-      text-align: right;
-      font-size: 1.5rem;
-      color: var(--verde-uabc);
-      cursor: pointer;
-      margin-bottom: 1rem;
-    }
-  
-    .modal-global .cerrar:hover {
-      color: red;
-    }
-  </style>
-  
+  <!-- Modal Global -->
   <div id="modal-global" class="modal-global">
     <div class="contenido">
       <div class="cerrar" onclick="cerrarModalGlobal()">&times;</div>

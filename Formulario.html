@@ -1,151 +1,47 @@
-<!-- Formulario.html -->
 <!DOCTYPE html>
 <html>
 <head>
   <base target="_top">
- 
-
-
-
+  <?!= include("CSS"); ?>
+  <?!= include("Utils"); ?>
+  <?!= include("Components"); ?>
   <style>
-    :root {
-      --verde-uabc: #1C6B3C;
-      --amarillo-uabc: #FFB800;
-      --verde-claro: #c8e6c9;
-      --blanco: #ffffff;
-    }
-
-    body {
-      font-family: 'Arial', sans-serif;
-      background: var(--verde-uabc);
-      margin: 0;
-      padding: 20px;
-      min-height: 100vh;
-    }
-
-    .contenedor-principal {
-      max-width: 800px;
-      margin: 40px auto;
-      background: var(--blanco);
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-    }
-
-    h2 {
-      color: var(--amarillo-uabc);
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    form input,
-    form select {
+    /* Añadimos estilos del loader directamente por si acaso */
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 2px solid var(--verde-claro);
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    form textarea {
-      width: 100%;
-      height: 180px; /* más alto para comodidad */
-      padding: 12px;
-      margin: 10px 0;
-      border: 2px solid var(--verde-claro);
-      border-radius: 8px;
-      font-size: 16px;
-      resize: vertical;
-    }
-
-    form input:focus,
-    form textarea:focus,
-    form select:focus {
-      border-color: var(--verde-uabc);
-      outline: none;
-    }
-
-    .boton-uabc {
-      background: var(--amarillo-uabc);
-      color: var(--verde-uabc) !important;
-      padding: 12px 25px;
-      border-radius: 25px;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: inline-block;
-      margin-top: 10px;
-    }
-
-    .boton-uabc:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(255,184,0,0.3);
-    }
-
-    .enlace-regresar {
-      display: inline-block;
-      margin-top: 20px;
-      text-decoration: none;
-      color: var(--verde-uabc);
-      font-weight: bold;
-      transition: color 0.3s ease;
-    }
-
-    .enlace-regresar:hover {
-      color: var(--amarillo-uabc);
-    }
-
-    @keyframes entradaSuave {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .alerta {
-      padding: 15px;
-      border-radius: 8px;
-      margin: 20px 0;
-      display: none;
-      align-items: center;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: flex;
       justify-content: center;
-      gap: 15px;
-      font-size: 16px;
-      background: #e8f5e9;
-      color: #2e7d32;
-      border: 1px solid #a5d6a7;
-      animation: entradaSuave 0.6s ease-out;
-      text-align: center;
+      align-items: center;
+      z-index: 9999;
     }
-
-    .contador-palabras {
-      text-align: right;
-      font-size: 13px;
-      color: #777;
-      margin-top: -10px;
-      margin-bottom: 10px;
+    
+    .loader {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #006633;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
     }
-
-    /* ✅ Responsive: mejora en pantallas pequeñas */
-    @media (max-width: 768px) {
-      .contenedor-principal {
-        margin: 20px 10px;
-        padding: 20px;
-      }
-
-      form textarea {
-        height: 150px;
-      }
-
-      .boton-uabc {
-        width: 100%;
-        text-align: center;
-      }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
   <div id="feedback-global" class="feedback-global oculto"></div>
+  
+  <!-- Añadimos nuestro propio loader -->
+  <div id="loader-personalizado" class="loader-overlay" style="display: none;">
+    <div class="loader"></div>
+  </div>
 
   <div class="contenedor-principal animar-entrada">
     <h2>📨 Someter Propuesta de Proyecto</h2>
@@ -171,29 +67,79 @@
   </div>
 
   <script>
+    // Definimos nuestras propias funciones de loader y feedback independientemente
+    function mostrarLoaderPersonalizado() {
+      document.getElementById('loader-personalizado').style.display = 'flex';
+    }
+    
+    function ocultarLoaderPersonalizado() {
+      document.getElementById('loader-personalizado').style.display = 'none';
+    }
+    
+    function mostrarFeedbackPersonalizado(mensaje, tipo) {
+      const elemento = document.getElementById('feedback-global');
+      if (!elemento) return;
+      
+      elemento.textContent = mensaje;
+      elemento.className = 'feedback-global';
+      
+      if (tipo === 'error') {
+        elemento.classList.add('error');
+      } else {
+        elemento.classList.add('exito');
+      }
+      
+      elemento.classList.add('mostrar');
+      elemento.classList.remove('oculto');
+      
+      // Ocultar después de 4 segundos
+      setTimeout(() => {
+        elemento.classList.remove('mostrar');
+        elemento.classList.add('oculto');
+      }, 4000);
+    }
+
     function enviar() {
       const form = document.getElementById('formulario');
       const mensaje = document.getElementById('mensajeExito');
-      const descripcion = document.getElementById('descripcion').value;
+      const descripcion = document.getElementById('descripcion').value.trim();
 
-      const palabras = descripcion.trim().split(/\s+/);
+      // Debug message
+      console.log("Iniciando envío de formulario");
+      mostrarFeedbackPersonalizado("Procesando formulario...", "exito");
+
+      const palabras = descripcion.split(/\s+/);
       if (palabras.length > 500) {
-        alert("⚠️ La descripción no debe superar las 500 palabras.");
+        mostrarFeedbackPersonalizado("⚠️ La descripción no debe superar las 500 palabras.", "error");
         return;
       }
 
       const formData = new FormData(form);
       const datos = Object.fromEntries(formData.entries());
+      
+      // Log form data
+      console.log("Datos a enviar:", datos);
 
-      google.script.run.withSuccessHandler(function(id){
-        form.reset();
-        actualizarContador();
-        mensaje.innerHTML = `🎓 <strong>¡Gracias!</strong><br>Tu propuesta fue enviada correctamente.<br><strong>ID:</strong> ${id}`;
-        mensaje.style.display = 'flex';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }).withFailureHandler(function(error){
-        alert('❌ Error al enviar la propuesta:\n' + error.message);
-      }).someterPropuesta(datos);
+      // Mostrar loader personalizado
+      mostrarLoaderPersonalizado();
+
+      google.script.run
+        .withSuccessHandler(function(id){
+          console.log("Éxito, ID recibido:", id);
+          ocultarLoaderPersonalizado();
+          form.reset();
+          actualizarContador();
+          mensaje.innerHTML = `🎓 <strong>¡Gracias!</strong><br>Tu propuesta fue enviada correctamente.<br><strong>ID:</strong> ${id}`;
+          mensaje.style.display = 'flex';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          mostrarFeedbackPersonalizado("Propuesta enviada con éxito", "exito");
+        })
+        .withFailureHandler(function(error){
+          console.error("Error:", error);
+          ocultarLoaderPersonalizado();
+          mostrarFeedbackPersonalizado('❌ Error al enviar la propuesta: ' + (error.message || error), "error");
+        })
+        .someterPropuesta(datos);
     }
 
     const descripcionInput = document.getElementById('descripcion');

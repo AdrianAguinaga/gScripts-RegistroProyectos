@@ -1,432 +1,155 @@
+<!-- GestionProyecto.html -->
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top" />
+<head>
+  <base target="_top">
+  <!-- Incluir el CSS unificado -->
+  <?!= include("CSS"); ?>
+</head>
+<body>
+  <!-- Puedes incluir Utils y Components si lo deseas -->
+  <?!= include("Utils"); ?>
+  <?!= include("Components"); ?>
 
-    <style>
-      :root {
-        --verde-uabc: #1c6b3c;
-        --amarillo-uabc: #ffb800;
-        --verde-claro: #c8e6c9;
-        --blanco: #ffffff;
-        --gris-texto: #4a5568;
-        --sombra: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  <div id="feedback-global" class="feedback-global oculto"></div>
+
+  <div class="contenedor-principal" id="main-content">
+    <!-- El loader se posiciona en CSS con la clase .loader -->
+    <div class="loader"></div>
+  </div>
+
+  <script>
+    const currentProjectId = "<?= idProyecto ?>";
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!currentProjectId) {
+        alert("No se especificó un ID del proyecto.");
+        return;
       }
 
-      body {
-        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-        background: linear-gradient(135deg, var(--verde-uabc) 0%, #16492a 100%);
-        margin: 0;
-        padding: 20px;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--gris-texto);
-      }
+      const mainContent = document.getElementById("main-content");
+      const loader = document.querySelector(".loader");
 
-      .contenedor-principal {
-        width: 90%;
-        max-width: 900px;
-        background: var(--blanco);
-        padding: 2.5rem;
-        border-radius: 1rem;
-        box-shadow: var(--sombra);
-        transition: transform 0.3s ease;
-      }
-
-      .contenedor-principal:hover {
-        transform: translateY(-2px);
-      }
-
-      h2 {
-        color: var(--verde-uabc);
-        margin-bottom: 1.5rem;
-        border-bottom: 2px solid var(--verde-claro);
-        padding-bottom: 0.75rem;
-        text-align: center;
-      }
-
-      p,
-      label {
-        color: var(--gris-texto);
-        font-size: 1rem;
-      }
-
-      label {
-        font-weight: 600;
-      }
-
-      select,
-      textarea,
-      input[type="url"] {
-        width: 100%;
-        padding: 0.75rem;
-        margin-top: 0.5rem;
-        margin-bottom: 1rem;
-        border: 2px solid var(--verde-claro);
-        border-radius: 0.5rem;
-        font-size: 1rem;
-        box-sizing: border-box;
-        transition: border-color 0.3s ease;
-      }
-
-      select:focus,
-      textarea:focus,
-      input[type="url"]:focus {
-        outline: none;
-        border-color: var(--verde-uabc);
-      }
-
-      button {
-        background: var(--amarillo-uabc);
-        color: var(--verde-uabc);
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 1.25rem;
-        cursor: pointer;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: var(--sombra);
-        margin-top: 0.5rem;
-      }
-
-      button:hover {
-        background: var(--verde-uabc);
-        color: var(--blanco);
-        transform: translateY(-2px);
-      }
-
-      a.boton-uabc {
-        display: inline-block;
-        text-decoration: none;
-        background: var(--verde-uabc);
-        color: var(--blanco);
-        padding: 0.75rem 1.5rem;
-        border-radius: 1.25rem;
-        margin-top: 1rem;
-        transition: all 0.3s ease;
-        font-weight: 600;
-        box-shadow: var(--sombra);
-      }
-
-      a.boton-uabc:hover {
-        background: var(--amarillo-uabc);
-        color: var(--verde-uabc);
-        transform: translateY(-2px);
-      }
-
-      .loader {
-        border: 5px solid var(--verde-claro);
-        border-top: 5px solid var(--amarillo-uabc);
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        animation: spin 1s linear infinite;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-      }
-
-      @keyframes spin {
-        0% {
-          transform: translate(-50%, -50%) rotate(0deg);
-        }
-
-        100% {
-          transform: translate(-50%, -50%) rotate(360deg);
-        }
-      }
-
-      .card-datos {
-        background: #f9f9f9;
-        border: 2px solid var(--verde-claro);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-      }
-
-      .grid-datos {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 1rem;
-        font-size: 0.95rem;
-        margin-bottom: 2rem;
-        color: var(--gris-texto);
-      }
-
-      .estado-actual {
-        text-align: center;
-      }
-
-      .estado-actual span {
-        font-weight: 600;
-        font-size: 0.95rem;
-        color: #777;
-      }
-
-      .estado-resaltado {
-        font-size: 1.2rem;
-        font-weight: 500;
-        color: var(--verde-uabc);
-        background: var(--amarillo-uabc);
-        display: inline-block;
-        padding: 0.5rem 2rem;
-        border-radius: 999px;
-        margin-top: 0.5rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-
-      .card-seccion {
-        background: #fdfdfd;
-        border: 2px solid var(--verde-claro);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      }
-
-      .card-seccion label {
-        display: block;
-        margin-bottom: 0.75rem;
-        font-weight: 600;
-        color: var(--verde-uabc);
-        font-size: 1.1rem;
-      }
-
-      .card-seccion textarea {
-        min-height: 100px;
-        resize: vertical;
-      }
-
-      .card-seccion input,
-      .card-seccion select,
-      .card-seccion textarea {
-        width: 100%;
-        padding: 0.75rem;
-        margin-bottom: 1rem;
-        border: 2px solid var(--verde-claro);
-        border-radius: 0.5rem;
-        font-size: 1rem;
-        transition: border-color 0.3s ease;
-        box-sizing: border-box;
-      }
-
-      .card-seccion input:focus,
-      .card-seccion select:focus,
-      .card-seccion textarea:focus {
-        outline: none;
-        border-color: var(--verde-uabc);
-      }
-      .card-seccion button {
-        background: var(--amarillo-uabc);
-        color: var(--verde-uabc);
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 1.25rem;
-        cursor: pointer;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: var(--sombra);
-      }
-
-      .mensaje-feedback {
-        margin-top: 0.75rem;
-        font-size: 0.95rem;
-        padding: 0.75rem;
-        border-radius: 8px;
-        display: none;
-        animation: fadeIn 0.3s ease-in-out;
-      }
-
-      .mensaje-feedback.exito {
-        background-color: #e6f4ea;
-        border: 1px solid #66bb6a;
-        color: #2e7d32;
-      }
-
-      .mensaje-feedback.error {
-        background-color: #ffecec;
-        border: 1px solid #e57373;
-        color: #c62828;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(-5px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      @media (max-width: 640px) {
-        .contenedor-principal {
-          padding: 1.5rem;
-          margin: 1rem;
-        }
-
-        h2 {
-          font-size: 1.5rem;
-        }
-
-        button,
-        a.boton-uabc {
-          width: 100%;
-          text-align: center;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div id="feedback-global" class="feedback-global oculto"></div>
-
-    <div class="contenedor-principal" id="main-content">
-      <div class="loader"></div>
-    </div>
-
-    <script>
-      const currentProjectId = "<?= idProyecto ?>";
-      document.addEventListener("DOMContentLoaded", () => {
-        if (!currentProjectId) {
-          alert("No se especificó un ID del proyecto.");
-          return;
-        }
-
-        const mainContent = document.getElementById("main-content");
-        const loader = document.querySelector(".loader");
-
-        google.script.run
-          .withSuccessHandler((proyecto) => {
-            loader.remove();
-            mainContent.innerHTML = `
+      google.script.run
+        .withSuccessHandler((proyecto) => {
+          loader.remove();
+          mainContent.innerHTML = `
             <h2>📌 Proyecto: ${proyecto.titulo}</h2>
-              <div class="card-datos">
-               <div class="grid-datos">
-                  <div><strong>Nombre:</strong><br> ${proyecto.nombre}</div>
-                  <div><strong>Matrícula:</strong><br> ${proyecto.matricula}</div>
-                  <div><strong>Email:</strong><br> ${proyecto.email}</div>
-                  <div><strong>Carrera:</strong><br> ${proyecto.carrera}</div>
-                  <div><strong>Semestre:</strong><br> ${proyecto.semestre}</div>
-                </div>
-
-                <div class="estado-actual">
-                   <span>Estado actual</span>
-                    <div class="estado-resaltado">${proyecto.estado}</div>
-                    </div>
+            <div class="card-datos">
+              <div class="grid-datos">
+                <div><strong>Nombre:</strong><br> ${proyecto.nombre}</div>
+                <div><strong>Matrícula:</strong><br> ${proyecto.matricula}</div>
+                <div><strong>Email:</strong><br> ${proyecto.email}</div>
+                <div><strong>Carrera:</strong><br> ${proyecto.carrera}</div>
+                <div><strong>Semestre:</strong><br> ${proyecto.semestre}</div>
               </div>
+              <div class="estado-actual">
+                <span>Estado actual</span>
+                <div class="estado-resaltado">${proyecto.estado}</div>
+              </div>
+            </div>
 
-              <div class="card-seccion">
-  <label for="estado">📊 <strong>Cambiar Estado</strong></label>
-  <select id="estado">
-    <option>Aprobado</option>
-    <option>Iniciado</option>
-    <option>En Diseño</option>
-    <option>Desarrollo</option>
-    <option>Pruebas</option>
-    <option>Finalizado</option>
-    <option>Cancelado</option>
-    <option>Detenido</option>
-  </select>
- <button onclick="cambiarEstado()">Guardar Estado</button>
-<div id="mensaje-estado" class="mensaje-feedback"></div>
-</div>
+            <div class="card-seccion">
+              <label for="estado">📊 <strong>Cambiar Estado</strong></label>
+              <select id="estado">
+                <option>Aprobado</option>
+                <option>Iniciado</option>
+                <option>En Diseño</option>
+                <option>Desarrollo</option>
+                <option>Pruebas</option>
+                <option>Finalizado</option>
+                <option>Cancelado</option>
+                <option>Detenido</option>
+              </select>
+              <button onclick="cambiarEstado()">Guardar Estado</button>
+              <div id="mensaje-estado" class="mensaje-feedback"></div>
+            </div>
 
-<div class="card-seccion">
-  <label for="nota">📝 <strong>Agregar Nota</strong></label>
-  <textarea id="nota" placeholder="Agrega una observación relevante..."></textarea>
- <button onclick="agregarNota()">Guardar Nota</button>
-<div id="mensaje-nota" class="mensaje-feedback"></div>
-</div>
+            <div class="card-seccion">
+              <label for="nota">📝 <strong>Agregar Nota</strong></label>
+              <textarea id="nota" placeholder="Agrega una observación relevante..."></textarea>
+              <button onclick="agregarNota()">Guardar Nota</button>
+              <div id="mensaje-nota" class="mensaje-feedback"></div>
+            </div>
 
-<div class="card-seccion">
-  <label for="repositorio">💻 <strong>Repositorio GitHub</strong></label>
-  <input type="url" id="repositorio" placeholder="https://github.com/..." value="${proyecto.repositorio}">
-  <button onclick="guardarRepositorio()">Guardar Repositorio</button>
-<div id="mensaje-repositorio" class="mensaje-feedback"></div>
-
-</div>
-
-
+            <div class="card-seccion">
+              <label for="repositorio">💻 <strong>Repositorio GitHub</strong></label>
+              <input type="url" id="repositorio" placeholder="https://github.com/..." value="${proyecto.repositorio}">
+              <button onclick="guardarRepositorio()">Guardar Repositorio</button>
+              <div id="mensaje-repositorio" class="mensaje-feedback"></div>
+            </div>
 
             <div style="margin-top:20px;text-align:center;">
               <a class="boton-uabc" href="<?= baseUrl ?>?page=propuestas">← Regresar a proyectos aprobados</a>
             </div>
           `;
 
-            document.getElementById("estado").value = proyecto.estado;
-          })
-          .withFailureHandler((error) => {
-            loader.remove();
-            mainContent.innerHTML = `
+          document.getElementById("estado").value = proyecto.estado;
+        })
+        .withFailureHandler((error) => {
+          loader.remove();
+          mainContent.innerHTML = `
             <div style="color:red;">
               Error al cargar datos del proyecto: ${error.message}
             </div>
           `;
-          })
-          .obtenerDatosProyecto(currentProjectId);
-      });
+        })
+        .obtenerDatosProyecto(currentProjectId);
+    });
 
-      function cambiarEstado() {
-        const nuevoEstado = document.getElementById("estado").value;
-        google.script.run
-          .withSuccessHandler(() => {
-            mostrarMensaje("mensaje-estado", "📝 Estado correctamente.");
-            document.getElementById("mensaje-estado").value = "";
-          })
-          .withFailureHandler((error) => {
-            mostrarMensaje(
-              "mensaje-nota",
-              "❌ Error al agregar nota: " + error.message,
-              "error"
-            );
-          })
+    function cambiarEstado() {
+      const nuevoEstado = document.getElementById("estado").value;
+      google.script.run
+        .withSuccessHandler(() => {
+          mostrarMensaje("mensaje-estado", "📝 Estado correctamente.");
+          // document.getElementById("mensaje-estado").value = "";
+        })
+        .withFailureHandler((error) => {
+          mostrarMensaje(
+            "mensaje-nota",
+            "❌ Error al agregar nota: " + error.message,
+            "error"
+          );
+        })
+        .cambiarEstadoProyecto(currentProjectId, nuevoEstado);
+    }
 
-          .cambiarEstadoProyecto(currentProjectId, nuevoEstado);
-      }
+    function agregarNota() {
+      const texto = document.getElementById("nota").value;
+      google.script.run
+        .withSuccessHandler(() => {
+          alert("Nota agregada correctamente.");
+          document.getElementById("nota").value = "";
+        })
+        .withFailureHandler((error) =>
+          alert("Error al agregar nota: " + error.message)
+        )
+        .agregarNotaProyecto(currentProjectId, texto);
+    }
 
-      function agregarNota() {
-        const texto = document.getElementById("nota").value;
-        google.script.run
-          .withSuccessHandler(() => {
-            alert("Nota agregada correctamente.");
-            document.getElementById("nota").value = "";
-          })
-          .withFailureHandler((error) =>
-            alert("Error al agregar nota: " + error.message)
-          )
-          .agregarNotaProyecto(currentProjectId, texto);
-      }
+    function guardarRepositorio() {
+      const link = document.getElementById("repositorio").value;
+      google.script.run
+        .withSuccessHandler(() =>
+          alert("Repositorio guardado correctamente.")
+        )
+        .withFailureHandler((error) =>
+          alert("Error al guardar repositorio: " + error.message)
+        )
+        .guardarRepositorioProyecto(currentProjectId, link);
+    }
 
-      function guardarRepositorio() {
-        const link = document.getElementById("repositorio").value;
-        google.script.run
-          .withSuccessHandler(() =>
-            alert("Repositorio guardado correctamente.")
-          )
-          .withFailureHandler((error) =>
-            alert("Error al guardar repositorio: " + error.message)
-          )
-          .guardarRepositorioProyecto(currentProjectId, link);
-      }
+    function mostrarMensaje(idElemento, mensaje, tipo = "exito") {
+      const div = document.getElementById(idElemento);
+      if (!div) return;
 
-      function mostrarMensaje(idElemento, mensaje, tipo = "exito") {
-        const div = document.getElementById(idElemento);
-        if (!div) return;
+      div.className = `mensaje-feedback ${tipo}`;
+      div.textContent = mensaje;
+      div.style.display = "block";
 
-        div.className = `mensaje-feedback ${tipo}`;
-        div.textContent = mensaje;
-        div.style.display = "block";
-
-        setTimeout(() => {
-          div.style.display = "none";
-        }, 3000);
-      }
-    </script>
-  </body>
+      setTimeout(() => {
+        div.style.display = "none";
+      }, 3000);
+    }
+  </script>
+</body>
 </html>
