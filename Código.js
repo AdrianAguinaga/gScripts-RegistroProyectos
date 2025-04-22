@@ -12,26 +12,38 @@ function doGet(e) {
       template = HtmlService.createTemplateFromFile('Formulario');
       break;
 
-    case 'administrador':
-      template = HtmlService.createTemplateFromFile('PanelAdministrador');
-      template.propuestas = obtenerPropuestas();
-      break;
-
-    case 'estadisticas':
-      template = HtmlService.createTemplateFromFile('Estadisticas');
-      break;
-
-    case 'propuestas':
-      template = HtmlService.createTemplateFromFile('ProyectosAprobados');
-      template.proyectos = obtenerPropuestas();
-      template.baseUrl = ScriptApp.getService().getUrl();
-      break;
-
+      case 'administrador':
+        const pass = e.parameter.pass || '';
+        if (!validarAccesoAdministrador(pass)) {
+          template = HtmlService.createTemplateFromFile('LoginAdministrador');
+          template.mensajeError = pass ? "Contraseña incorrecta." : "";
+          template.baseUrl = ScriptApp.getService().getUrl();
+        } else {
+          template = HtmlService.createTemplateFromFile('PanelAdministrador');
+          template.propuestas = obtenerPropuestas();
+        }
+        break;
+      
+      case 'estadisticas':
+        template = HtmlService.createTemplateFromFile('Estadisticas');
+        template.proyectos = obtenerPropuestas(); // datos completos para análisis
+        break;
+      case 'propuestas':
+        template = HtmlService.createTemplateFromFile('ProyectosAprobados');
+        template.proyectos = obtenerPropuestasAprobadas();
+        template.baseUrl = ScriptApp.getService().getUrl();
+        break;
+      
     case 'gestion':
       template = HtmlService.createTemplateFromFile('GestionProyecto');
       template.baseUrl = ScriptApp.getService().getUrl();
       template.idProyecto = params.id || ""; // ✅ Cambio principal aquí
       break;
+
+    case 'cambiarPass':
+        template = HtmlService.createTemplateFromFile('CambiarContrasena');
+        break;
+      
 
     default:
       template = HtmlService.createTemplateFromFile('Index');
@@ -275,4 +287,33 @@ function enviarCorreo(destinatario, asunto, mensaje) {
   } catch (error) {
     Logger.log(`Error al enviar correo: ${error}`);
   }
+}
+
+function obtenerTodosLosProyectos() {
+  const hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Propuestas');
+  const datos = hoja.getDataRange().getValues().slice(1);
+
+  return datos.map(row => ({
+    id: row[0],
+    titulo: row[2],
+    estado: row[10],
+    historial: row[12] || "[]"
+  }));
+}
+
+function validarAccesoAdministrador(passwordIngresado) {
+  const passReal = PropertiesService.getScriptProperties().getProperty("ADMIN_PASS");
+  return passwordIngresado === passReal;
+}
+
+function cambiarContrasena(actual, nueva) {
+  const propiedades = PropertiesService.getScriptProperties();
+  const passGuardada = propiedades.getProperty("ADMIN_PASS");
+
+  if(actual !== passGuardada) {
+    throw new Error("La contraseña actual no es correcta.");
+  }
+
+  propiedades.setProperty("ADMIN_PASS", nueva);
+  return "Contraseña cambiada exitosamente.";
 }

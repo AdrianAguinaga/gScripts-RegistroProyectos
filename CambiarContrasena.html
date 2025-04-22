@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include("CSS"); ?>
+  <style>
+    .contenedor-cambio {
+      max-width: 450px;
+      margin: auto;
+      padding: 20px;
+      text-align: center;
+    }
+    input {
+      margin-top: 15px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor-principal contenedor-cambio">
+    <h2>🔑 Cambiar Contraseña Administrador</h2>
+    <input type="password" id="actual" placeholder="Contraseña actual" required>
+    <input type="password" id="nueva" placeholder="Nueva contraseña" required>
+    <input type="password" id="confirmar" placeholder="Confirmar contraseña" required>
+    <button class="boton-uabc" onclick="cambiarPass()">Cambiar Contraseña</button>
+    <br>
+    <a class="enlace-regresar" href="<?= ScriptApp.getService().getUrl(); ?>">← Volver al inicio</a>
+  </div>
+
+<script>
+function cambiarPass(){
+  const actual = document.getElementById('actual').value;
+  const nueva = document.getElementById('nueva').value;
+  const confirmar = document.getElementById('confirmar').value;
+
+  if(nueva !== confirmar) {
+    alert("Las nuevas contraseñas no coinciden.");
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(res => alert(res))
+    .withFailureHandler(err => alert("Error: " + err.message))
+    .cambiarContrasena(actual, nueva);
+}
+</script>
+
+</body>
+</html>

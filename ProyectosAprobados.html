@@ -26,24 +26,23 @@
             <th>Acción</th>
           </tr>
         </thead>
+        
         <tbody>
-          <? for (let i = 1; i < proyectos.length; i++) { ?>
+          <? proyectos.forEach(proyecto => { ?>
           <tr>
-            <td><?= proyectos[i][2] ?></td>
-            <td><?= proyectos[i][4] ?></td>
-            <td><?= proyectos[i][7] ?></td>
-            <td><?= proyectos[i][8] ?></td>
+            <td><?= proyecto.titulo ?></td>
+            <td><?= proyecto.nombre ?></td>
+            <td><?= proyecto.carrera ?></td>
+            <td><?= proyecto.semestre ?></td>
             <td>
-              <button
-                class="boton-uabc"
-                onclick="abrirModal('<?= proyectos[i][0] ?>')"
-              >
+              <button class="boton-uabc" onclick="abrirModal('<?= proyecto.id ?>')">
                 Acceder
               </button>
             </td>
           </tr>
-          <? } ?>
+          <? }); ?>
         </tbody>
+        
       </table>
 
       <div style="text-align: center; margin-top: 30px">
