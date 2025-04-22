@@ -9,170 +9,204 @@
   <? escaparHTML = escaparHTML; ?>
 
   <script>
+    // Escapa HTML
     function escaparHTML(texto) {
       if (!texto) return "";
-      return texto.replace(/[&<>"']/g, function (match) {
-        const caracteres = {
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;",
-        };
-        return caracteres[match];
-      });
+      return texto.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     }
 
+    // Mostrar descripción en modal
     function mostrarDescripcionDesdeAtributo(btn) {
       const id = btn.getAttribute("data-id");
-      const descripcion = btn.getAttribute("data-descripcion");
-      mostrarDescripcion(id, descripcion);
+      const desc = btn.getAttribute("data-descripcion");
+      document.getElementById("contenidoDescripcion").innerHTML =
+        `<strong>ID:</strong> ${id}<br><br><strong>Descripción:</strong><br>${desc}`;
+      document.getElementById("modalDescripcion").style.display = "block";
     }
 
-    let propuestaSeleccionadaId = null;
-    let celdaIdRef = null;
+    let propuestaSeleccionadaId, celdaIdRef;
 
+    // Abre modal y prepara acciones
     function cambiarEstado(id) {
       propuestaSeleccionadaId = id;
       celdaIdRef = document.querySelector(`td[data-id='${id}']`);
-      document.getElementById("infoEstado").innerText = `¿Qué acción deseas tomar para la propuesta ID: ${id}?`;
+      document.getElementById("infoEstado").innerText =
+        `¿Qué acción deseas tomar para la propuesta ID: ${id}?`;
+      // Mostrar botones y ocultar comentarios
+      document.getElementById("accionesEstado").style.display = "flex";
+      document.getElementById("comentariosRechazo").style.display = "none";
       document.getElementById("modalEstado").style.display = "block";
     }
 
-    function confirmarEstado(nuevoEstado) {
+    // Prepara flujo de aprobación
+    function prepararAprobacion() {
+      confirmarEstado('Aprobado', '');
+    }
+
+    // Prepara flujo de rechazo (muestra textarea)
+    function prepararRechazo() {
+      document.getElementById("accionesEstado").style.display = "none";
+      document.getElementById("comentariosRechazo").style.display = "block";
+    }
+
+    // Confirmar cambio de estado; siempre usar esta única función
+    function confirmarEstado(nuevoEstado, comentario) {
       google.script.run
         .withSuccessHandler(() => {
-          if (celdaIdRef) {
-            celdaIdRef.style.color = nuevoEstado === "Aprobado" ? "green" : "red";
-            celdaIdRef.parentElement.children[5].textContent = nuevoEstado;
-          }
-
+          // Actualizar estilo en tabla
+          celdaIdRef.style.color = nuevoEstado === "Aprobado" ? "green" : "red";
+          celdaIdRef.parentElement.children[5].textContent = nuevoEstado;
           cerrarModalEstado();
           alert(`Estado actualizado a "${nuevoEstado}".`);
         })
-        .cambiarEstadoPropuesta(propuestaSeleccionadaId, nuevoEstado);
+        .cambiarEstadoPropuesta(propuestaSeleccionadaId, nuevoEstado, comentario);
     }
 
-    function mostrarDescripcion(id, descripcion) {
-      const modal = document.getElementById("modalDescripcion");
-      const contenido = document.getElementById("contenidoDescripcion");
-      contenido.innerHTML = `<strong>ID:</strong> ${id}<br><br><strong>Descripción:</strong><br>${descripcion}`;
-      modal.style.display = "block";
-    }
-
+    // Cierra modales
     function cerrarModal() {
       document.getElementById("modalDescripcion").style.display = "none";
     }
-
     function cerrarModalEstado() {
       document.getElementById("modalEstado").style.display = "none";
     }
 
-    function filtrar(valor) {
-      const filas = document.querySelectorAll("tbody tr");
-      filas.forEach((fila) => {
-        const titulo = fila.children[2].textContent.toLowerCase();
-        fila.style.display = titulo.includes(valor.toLowerCase()) ? "" : "none";
+    // Filtros
+    function filtrar(text) {
+      document.querySelectorAll("tbody tr").forEach(tr => {
+        tr.style.display = tr.children[2].textContent.toLowerCase()
+          .includes(text.toLowerCase()) ? "" : "none";
+      });
+    }
+    function filtrarEstado(valor) {
+      document.querySelectorAll("tbody tr").forEach(tr => {
+        const est = tr.children[5].textContent.trim();
+        tr.style.display = (!valor || est === valor) ? "" : "none";
       });
     }
 
+    // Exportar PDF
     function exportar() {
-      google.script.run
-        .withSuccessHandler((url) => {
-          if (confirm("Exportación completada. ¿Deseas abrir el PDF?")) {
-            window.open(url, "_blank");
-          }
-        })
-        .exportarPropuestas();
+      google.script.run.withSuccessHandler(url => {
+        if (confirm("Exportación completada. ¿Deseas abrir el PDF?")) {
+          window.open(url, "_blank");
+        }
+      }).exportarPropuestas();
     }
 
-    window.onclick = function (event) {
-      const modal1 = document.getElementById("modalDescripcion");
-      const modal2 = document.getElementById("modalEstado");
-      if (event.target === modal1) modal1.style.display = "none";
-      if (event.target === modal2) modal2.style.display = "none";
+    // Cierra al hacer click fuera
+    window.onclick = e => {
+      if (e.target.id === "modalDescripcion") cerrarModal();
+      if (e.target.id === "modalEstado") cerrarModalEstado();
     };
   </script>
 </head>
 <body>
 
-<div id="feedback-global" class="feedback-global oculto"></div>
+  <div id="feedback-global" class="feedback-global oculto"></div>
 
-<div class="contenedor-principal animar-entrada">
-  <h1>📋 Panel de Administración</h1>
+  <div class="contenedor-principal animar-entrada">
+    <h1>📋 Panel de Administración</h1>
 
-  <div style="text-align: center; margin-bottom: 20px;">
-    <input class="input-uabc" type="text" placeholder="Buscar por título..." onkeyup="filtrar(this.value)">
-  </div>
+    <!-- Buscador -->
+    <div style="text-align:center; margin-bottom:20px;">
+      <input class="input-uabc" placeholder="Buscar por título..." onkeyup="filtrar(this.value)">
+    </div>
 
-  <div style="text-align: center; margin-bottom: 20px;">
-    <a class="boton-uabc" href="<?= ScriptApp.getService().getUrl(); ?>">🏠 Volver al inicio</a>
-  </div>
+    <!-- Botón regresar -->
+    <div style="text-align:center; margin-bottom:20px;">
+      <a class="boton-uabc" href="<?= ScriptApp.getService().getUrl(); ?>">🏠 Volver al inicio</a>
+    </div>
 
-  <div style="text-align: center; margin-bottom: 20px;">
-    <button class="boton-uabc" onclick="exportar()">📄 Exportar PDF</button>
-  </div>
+    <!-- Exportar -->
+    <div style="text-align:center; margin-bottom:20px;">
+      <button class="boton-uabc" onclick="exportar()">📄 Exportar PDF</button>
+    </div>
 
-  <? if (propuestas.length > 1) { ?>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Fecha</th>
-          <th>Título</th>
-          <th>Proponente</th>
-          <th>Email</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <? for (let i = 1; i < propuestas.length; i++) { ?>
+    <!-- Filtro por estado -->
+    <div style="text-align:center; margin-bottom:12px;">
+      <label>📑 Filtrar por estado:</label>
+      <select class="input-uabc" style="max-width:200px; display:inline-block; margin-left:8px;"
+              onchange="filtrarEstado(this.value)">
+        <option value="">Todos</option>
+        <option>Pendiente</option>
+        <option>Aprobado</option>
+        <option>Rechazado</option>
+      </select>
+    </div>
+
+    <!-- Tabla de propuestas -->
+    <? if (propuestas.length > 1) { ?>
+      <table>
+        <thead>
           <tr>
-            <td data-id="<?= propuestas[i][0] ?>"><?= propuestas[i][0] ?></td>
-            <td><?= new Date(propuestas[i][1]).toLocaleDateString() ?></td>
-            <td><?= propuestas[i][2] ?></td>
-            <td><?= propuestas[i][4] ?> (<?= propuestas[i][5] ?>)</td>
-            <td><?= propuestas[i][6] ?></td>
-            <td><?= propuestas[i][10] ?></td>
-            <td>
-              <button class="boton-uabc" onclick="cambiarEstado('<?= propuestas[i][0] ?>')">Cambiar Estado</button>
-              <button class="boton-uabc" 
-                data-id="<?= propuestas[i][0] ?>" 
-                data-descripcion="<?= escaparHTML(propuestas[i][3]) ?>"
-                onclick="mostrarDescripcionDesdeAtributo(this)">
-                Revisar
-              </button>
-            </td>
+            <th>ID</th><th>Fecha</th><th>Título</th>
+            <th>Proponente</th><th>Email</th><th>Estado</th><th>Acciones</th>
           </tr>
-        <? } ?>
-      </tbody>
-    </table>
-  <? } else { ?>
-    <p>No hay propuestas registradas.</p>
-  <? } ?>
-</div>
-
-<!-- Modal de Descripción -->
-<div id="modalDescripcion" class="modal-uabc">
-  <div class="modal-contenido">
-    <span class="cerrar" onclick="cerrarModal()">&times;</span>
-    <div id="contenidoDescripcion" style="white-space: pre-wrap;"></div>
+        </thead>
+        <tbody>
+          <? for (let i = 1; i < propuestas.length; i++) { ?>
+            <tr>
+              <td data-id="<?= propuestas[i][0] ?>"><?= propuestas[i][0] ?></td>
+              <td><?= new Date(propuestas[i][1]).toLocaleDateString() ?></td>
+              <td><?= propuestas[i][2] ?></td>
+              <td><?= propuestas[i][4] ?> (<?= propuestas[i][5] ?>)</td>
+              <td><?= propuestas[i][6] ?></td>
+              <td><?= propuestas[i][10] ?></td>
+              <td>
+                <button class="boton-uabc" onclick="cambiarEstado('<?= propuestas[i][0] ?>')">
+                  Cambiar Estado
+                </button>
+                <button class="boton-uabc"
+                        data-id="<?= propuestas[i][0] ?>"
+                        data-descripcion="<?= escaparHTML(propuestas[i][3]) ?>"
+                        onclick="mostrarDescripcionDesdeAtributo(this)">
+                  Revisar
+                </button>
+              </td>
+            </tr>
+          <? } ?>
+        </tbody>
+      </table>
+    <? } else { ?>
+      <p>No hay propuestas registradas.</p>
+    <? } ?>
   </div>
-</div>
 
-<!-- Modal de Estado -->
-<div id="modalEstado" class="modal-uabc">
-  <div class="modal-contenido">
-    <span class="cerrar" onclick="cerrarModalEstado()">&times;</span>
-    <h3>Cambiar estado de la propuesta</h3>
-    <p id="infoEstado"></p>
-    <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
-      <button class="boton-uabc" onclick="confirmarEstado('Aprobado')">✅ Aprobar</button>
-      <button class="boton-uabc" onclick="confirmarEstado('Rechazado')">❌ Rechazar</button>
+  <!-- Modal descripción -->
+  <div id="modalDescripcion" class="modal-uabc">
+    <div class="modal-contenido">
+      <span class="cerrar" onclick="cerrarModal()">&times;</span>
+      <div id="contenidoDescripcion" style="white-space:pre-wrap;"></div>
     </div>
   </div>
-</div>
+
+  <!-- Modal estado con observaciones -->
+  <div id="modalEstado" class="modal-uabc">
+    <div class="modal-contenido">
+      <span class="cerrar" onclick="cerrarModalEstado()">&times;</span>
+      <h3>Cambiar estado de la propuesta</h3>
+      <p id="infoEstado"></p>
+
+      <!-- Botones de acción -->
+      <div id="accionesEstado" style="display:flex; gap:20px; justify-content:center;">
+        <button class="boton-uabc" onclick="prepararAprobacion()">✅ Aprobar</button>
+        <button class="boton-uabc" onclick="prepararRechazo()">❌ Rechazar</button>
+      </div>
+
+      <!-- Comentarios al rechazar -->
+      <div id="comentariosRechazo" style="display:none; margin-top:20px;">
+        <label for="inputComentario"><strong>Observaciones:</strong></label>
+        <textarea id="inputComentario"
+                  placeholder="Escribe aquí tus observaciones..."
+                  style="width:100%; min-height:80px;"></textarea>
+        <button class="boton-uabc"
+                style="margin-top:10px;"
+                onclick="confirmarEstado('Rechazado', inputComentario.value)">
+          📤 Confirmar Rechazo
+        </button>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>

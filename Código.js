@@ -138,23 +138,61 @@ function obtenerPropuestasAprobadas() {
     }));
 }
 
-function cambiarEstadoProyecto(id, nuevoEstado) {
-  const hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Propuestas');
+/**
+ * Cambia el estado de la propuesta y envía un correo al proponente.
+ * @param {string} id
+ * @param {string} nuevoEstado - 'Aprobado' o 'Rechazado'
+ * @param {string} comentario    - observaciones, sólo se usa si es 'Rechazado'
+ */
+function cambiarEstadoPropuesta(id, nuevoEstado, comentario) {
+  const ss    = SpreadsheetApp.getActiveSpreadsheet();
+  const hoja  = ss.getSheetByName('Propuestas');
   const datos = hoja.getDataRange().getValues();
+  let email, password;
 
+  // 1) Actualizar hoja y capturar email y password
   for (let i = 1; i < datos.length; i++) {
-    if (datos[i][0] === id) {
-      hoja.getRange(i + 1, 11).setValue(nuevoEstado);
-      hoja.getRange(i + 1, 17).setValue(new Date());
-
+    if (String(datos[i][0]) === String(id)) {
+      email    = datos[i][6];
+      password = datos[i][11];
+      hoja.getRange(i + 1, 11).setValue(nuevoEstado);      // Columna K: Estado
+      hoja.getRange(i + 1, 17).setValue(new Date());       // Columna Q: Fecha de cambio
       const historial = JSON.parse(datos[i][12] || "[]");
       historial.push({ estado: nuevoEstado, fecha: new Date().toISOString() });
-      hoja.getRange(i + 1, 13).setValue(JSON.stringify(historial));
-      return;
+      hoja.getRange(i + 1, 13).setValue(JSON.stringify(historial)); // Columna M: Historial
+      break;
     }
   }
-  throw new Error("Proyecto no encontrado para actualizar estado");
+
+  // 2) Enviar correo
+  if (nuevoEstado === "Aprobado") {
+    MailApp.sendEmail({
+      to:      email,
+      subject: "🎉 ¡Tu proyecto ha sido APROBADO!",
+      htmlBody: `
+        <p>¡Hola!</p>
+        <p>Tu proyecto con ID <strong>${id}</strong> ha sido <strong>APROBADO</strong>.</p>
+        <p>Tu contraseña de acceso es: <strong>${password}</strong></p>
+        <p>Puedes ingresar a la sección <em>Proyectos Aprobados</em> usando esa contraseña.</p>
+        <br><p>Saludos cordiales,<br>Equipo LIDE</p>
+      `
+    });
+  }
+  else if (nuevoEstado === "Rechazado") {
+    MailApp.sendEmail({
+      to:      email,
+      subject: "🔔 Actualización sobre tu propuesta de proyecto",
+      htmlBody: `
+        <p>¡Hola!</p>
+        <p>Tu proyecto con ID <strong>${id}</strong> ha sido <strong>RECHAZADO</strong>.</p>
+        ${comentario ? `<p><strong>Observaciones:</strong><br>${comentario}</p>` : ""}
+        <p>Si deseas mejorar tu propuesta y volver a someterla, no dudes en contactarnos en LIDE.</p>
+        <br><p>Saludos,<br>Equipo LIDE</p>
+      `
+    });
+  }
 }
+
 
 function agregarNotaProyecto(id, texto) {
   const hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Propuestas');
@@ -240,23 +278,7 @@ function someterPropuesta(datos) {
 }
 
 
-function cambiarEstadoPropuesta(id, nuevoEstado) {
-  const hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Propuestas');
-  const datos = hoja.getDataRange().getValues();
 
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][0] === id) {
-      hoja.getRange(i + 1, 11).setValue(nuevoEstado);
-      hoja.getRange(i + 1, 17).setValue(new Date());
-
-      const historial = JSON.parse(datos[i][12] || "[]");
-      historial.push({ estado: nuevoEstado, fecha: new Date().toISOString() });
-      hoja.getRange(i + 1, 13).setValue(JSON.stringify(historial));
-      return;
-    }
-  }
-  throw new Error("Proyecto no encontrado para actualizar estado");
-}
 // En Código.js, función de servidor
 function escaparHTML(texto) {
   if (!texto) return '';
