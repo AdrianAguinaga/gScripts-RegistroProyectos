@@ -510,4 +510,30 @@
   /* Ajustes en PDF export y tabla */
   /* ... (ya unificados arriba) ... */
 
+/* ===================== */
+/* Módulo Estadísticas   */
+/* ===================== */
+.estadisticas-grid-container {
+  display: grid;
+  /* dos columnas iguales */
+  grid-template-columns: 1fr 1fr;
+  /* primera fila 1fr, segunda fila 2fr */
+  grid-template-rows: 1fr 2fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+/* =============================== */
+/* Estadísticas: alturas de paneles */
+/* =============================== */
+.estadisticas-panel--small {
+  /* Cuadrantes superiores más compactos */
+  min-height: 150px;
+}
+
+.estadisticas-panel--large {
+  /* Cuadrantes inferiores con más espacio */
+  min-height: 400px;
+}
+
+
 </style>

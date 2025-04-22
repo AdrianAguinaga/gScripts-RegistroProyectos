@@ -3,47 +3,50 @@ const version = 2;
 const url = ScriptApp.getService().getUrl() + `?v=${version}`;
 
 function doGet(e) {
-  const params = e && e.parameter ? e.parameter : {};
-  const pagina = params.page || 'index';
+  const params = e.parameter || {};
+  const pagina = (params.page || 'index').toLowerCase();
   let template;
 
-  switch (pagina.toLowerCase()) {
+  switch (pagina) {
+    // ——————————————————————————————————————
+    // Admin y Estadísticas requieren login
+    case 'administrador':
+    case 'estadisticas':
+      const pass = params.pass || '';
+      if (!validarAccesoAdministrador(pass)) {
+        // Mostrar login
+        template = HtmlService.createTemplateFromFile('LoginAdministrador');
+        template.mensajeError = pass ? "Contraseña incorrecta." : "";
+        template.baseUrl     = ScriptApp.getService().getUrl();
+        template.pageDestino = pagina;
+      } else {
+        // Ya autenticado
+        if (pagina === 'administrador') {
+          template = HtmlService.createTemplateFromFile('PanelAdministrador');
+          template.propuestas = obtenerPropuestas();
+        } else {
+          template = HtmlService.createTemplateFromFile('Estadisticas');
+          template.baseUrl = ScriptApp.getService().getUrl();
+        }
+      }
+      break;
+
+    // ——————————————————————————————————————
     case 'formulario':
       template = HtmlService.createTemplateFromFile('Formulario');
       break;
 
-      case 'administrador':
-        const pass = e.parameter.pass || '';
-        if (!validarAccesoAdministrador(pass)) {
-          template = HtmlService.createTemplateFromFile('LoginAdministrador');
-          template.mensajeError = pass ? "Contraseña incorrecta." : "";
-          template.baseUrl = ScriptApp.getService().getUrl();
-        } else {
-          template = HtmlService.createTemplateFromFile('PanelAdministrador');
-          template.propuestas = obtenerPropuestas();
-        }
-        break;
-      
-      case 'estadisticas':
-        template = HtmlService.createTemplateFromFile('Estadisticas');
-        template.proyectos = obtenerPropuestas(); // datos completos para análisis
-        break;
-      case 'propuestas':
-        template = HtmlService.createTemplateFromFile('ProyectosAprobados');
-        template.proyectos = obtenerPropuestasAprobadas();
-        template.baseUrl = ScriptApp.getService().getUrl();
-        break;
-      
-    case 'gestion':
-      template = HtmlService.createTemplateFromFile('GestionProyecto');
+    case 'propuestas':
+      template = HtmlService.createTemplateFromFile('ProyectosAprobados');
+      template.proyectos = obtenerPropuestasAprobadas();
       template.baseUrl = ScriptApp.getService().getUrl();
-      template.idProyecto = params.id || ""; // ✅ Cambio principal aquí
       break;
 
-    case 'cambiarPass':
-        template = HtmlService.createTemplateFromFile('CambiarContrasena');
-        break;
-      
+    case 'gestion':
+      template = HtmlService.createTemplateFromFile('GestionProyecto');
+      template.baseUrl     = ScriptApp.getService().getUrl();
+      template.idProyecto  = params.id || "";
+      break;
 
     default:
       template = HtmlService.createTemplateFromFile('Index');
@@ -53,6 +56,8 @@ function doGet(e) {
     .setTitle("Gestión de Proyectos")
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
+
+
 
 // Función para incluir archivos HTML externos
 function include(filename) {
@@ -179,48 +184,61 @@ function guardarRepositorioProyecto(id, link) {
 
 
 function someterPropuesta(datos) {
-  try {
-    Logger.log("Iniciando someterPropuesta con datos: " + JSON.stringify(datos));
-    
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const hoja = ss.getSheetByName('Propuestas');
-    if (!hoja) {
-      Logger.log("Error: La hoja 'Propuestas' no existe.");
-      throw new Error("La hoja 'Propuestas' no existe.");
-    }
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const hoja = ss.getSheetByName('Propuestas');
+  if (!hoja) throw new Error("La hoja 'Propuestas' no existe.");
 
-    const id = generarUUID();
-    const fecha = new Date();
-    const contraseña = generarContraseña();
-
-    Logger.log("Añadiendo fila con ID: " + id);
-    
-    hoja.appendRow([
-      id,
-      fecha,
-      datos.titulo,
-      datos.descripcion,
-      datos.nombre,
-      datos.matricula,
-      datos.email,
-      datos.carrera,
-      datos.semestre,
-      datos.colaboradores || "",
-      "Pendiente",
-      contraseña,
-      JSON.stringify([]),
-      JSON.stringify([]),
-      "",
-      fecha
-    ]);
-
-    Logger.log("Propuesta añadida con éxito, ID: " + id);
-    return id;
-  } catch (error) {
-    Logger.log("Error en someterPropuesta: " + error.toString());
-    throw error;
+  // 1) Verificar proyectos pendientes del mismo email
+  const todas = hoja.getDataRange().getValues();
+  const tienePendiente = todas.slice(1).some(row => {
+    return String(row[6]).trim().toLowerCase() === datos.email.toLowerCase()
+        && String(row[10]).trim().toUpperCase() === "PENDIENTE";
+  });
+  if (tienePendiente) {
+    // Enviar correo notificando que ya hay un pendiente
+    MailApp.sendEmail({
+      to: datos.email,
+      subject: "No se registró nueva propuesta – proyecto pendiente",
+      htmlBody: `
+        <p>Estimado(a) ${datos.nombre},</p>
+        <p>Ya tienes un proyecto en estado <strong>PENDIENTE</strong> registrado.</p>
+        <p>Si deseas someter uno nuevo, por favor dirígete a LIDE para habilitar un nuevo registro.</p>
+        <p>Saludos,<br>Equipo LIDE</p>
+      `
+    });
+    throw new Error("Ya tienes un proyecto pendiente. Revisa tu correo para más detalles.");
   }
+
+  // 2) Registrar propuesta
+  const id    = generarUUID();
+  const fecha = new Date();
+  const pass  = generarContraseña();
+  hoja.appendRow([
+    id, fecha,
+    datos.titulo, datos.descripcion,
+    datos.nombre, datos.matricula,
+    datos.email, datos.carrera,
+    datos.semestre, datos.colaboradores||"",
+    "Pendiente", pass,
+    JSON.stringify([]), JSON.stringify([]),
+    "", fecha
+  ]);
+
+  // 3) Enviar correo de confirmación
+  MailApp.sendEmail({
+    to: datos.email,
+    subject: "Confirmación de registro de proyecto",
+    htmlBody: `
+      <p>Estimado(a) ${datos.nombre},</p>
+      <p>Tu proyecto <strong>«${datos.titulo}»</strong> ha sido registrado exitosamente.</p>
+      <p>Tu ID es <strong>${id}</strong>. Por favor, está atento(a) a la evaluación del mismo.</p>
+      <p>Saludos,<br>Equipo LIDE</p>
+    `
+  });
+
+  return id;
 }
+
 
 function cambiarEstadoPropuesta(id, nuevoEstado) {
   const hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Propuestas');
@@ -291,15 +309,18 @@ function enviarCorreo(destinatario, asunto, mensaje) {
 
 function obtenerTodosLosProyectos() {
   const hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Propuestas');
+  if (!hoja) return [];
   const datos = hoja.getDataRange().getValues().slice(1);
-
   return datos.map(row => ({
-    id: row[0],
-    titulo: row[2],
-    estado: row[10],
+    id:       row[0],
+    titulo:   row[2],
+    nombre:   row[4],
+    semestre:  row[8],           // ← añadimos semestre
+    estado:   row[10],
     historial: row[12] || "[]"
   }));
 }
+
 
 function validarAccesoAdministrador(passwordIngresado) {
   const passReal = PropertiesService.getScriptProperties().getProperty("ADMIN_PASS");

@@ -3,31 +3,21 @@
 <head>
   <base target="_top">
   <?!= include("CSS"); ?>
-  <style>
-    .login {
-      max-width: 400px;
-      margin: auto;
-      padding: 30px;
-      text-align: center;
-    }
-    input {
-      margin-top: 15px;
-      width: 100%;
-    }
-  </style>
 </head>
 <body>
-  <div class="contenedor-principal login">
-    <h2>🔐 Acceso Administrador</h2>
+  <div class="contenedor-principal login" style="max-width:400px; margin:auto;">
+    <h2>🔐 Acceso Requerido</h2>
     <? if (mensajeError) { ?>
       <div style="color:red; margin-bottom:15px;"><?= mensajeError ?></div>
     <? } ?>
     <form action="<?= baseUrl ?>" method="get">
-      <input type="hidden" name="page" value="administrador">
+      <input type="hidden" name="page" value="<?= pageDestino ?>">
       <input type="password" name="pass" placeholder="Contraseña" required>
       <button class="boton-uabc" type="submit">Acceder</button>
     </form>
+    <br>
     <a class="enlace-regresar" href="<?= baseUrl ?>">← Volver al inicio</a>
   </div>
 </body>
 </html>
+
