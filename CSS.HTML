@@ -534,6 +534,94 @@
   /* Cuadrantes inferiores con más espacio */
   min-height: 400px;
 }
+/* ===================== */
+/* Responsividad general */
+/* ===================== */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 1024px) {
+  body {
+    padding: 15px;
+  }
+  .contenedor-principal {
+    width: 100%;
+    max-width: 700px;
+    padding: 2rem;
+    margin: 1.5rem auto;
+  }
+  /* Estadísticas: pasa a 1 columna, filas auto */
+  .estadisticas-grid-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, auto);
+  }
+  .estadisticas-panel--small {
+    min-height: 120px;
+  }
+  .estadisticas-panel--large {
+    min-height: 300px;
+  }
+  /* Ajuste de grid-datos, tarjetas y secciones */
+  .grid-datos {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .card-datos, .card-seccion {
+    padding: 1rem;
+  }
+}
+
+/* Móviles pequeños */
+@media (max-width: 640px) {
+  /* Ajusta el body y tarjetas para ocupar todo */
+  body {
+    padding: 10px;
+  }
+  .contenedor-principal {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  h1, h2, h3 {
+    font-size: 1.25rem;
+  }
+  /* Formularios y botones a 100% */
+  input, select, textarea, button, .boton-uabc {
+    font-size: 0.9rem;
+  }
+  /* Nav colapsada */
+  nav ul {
+    flex-direction: column;
+  }
+  /* Tablas en scroll horizontal */
+  table {
+    display: block;
+    overflow-x: auto;
+    font-size: 14px;
+  }
+  /* Estadísticas: un solo panel tras otro */
+  .estadisticas-grid-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, auto);
+    gap: 15px;
+  }
+  .estadisticas-panel--small {
+    min-height: 100px;
+  }
+  .estadisticas-panel--large {
+    min-height: 240px;
+  }
+  /* Modales ocupan casi toda la pantalla */
+  .modal-contenido {
+    width: 95%;
+    padding: 20px;
+  }
+}
+
+/* Escritorios anchos */
+@media (min-width: 1025px) {
+  .estadisticas-grid-container {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 2fr;
+  }
+}
 
 
 </style>
